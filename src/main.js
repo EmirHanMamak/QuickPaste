@@ -32,6 +32,10 @@ let multiSelectMode  = false;
 let selectedSnippets = new Set(); // indices into filteredSnippets
 let activeProcessName = null; // current foreground app name for context-aware sort
 let currentThemeId   = 'violet'; // active theme id
+let dashboardOpen    = false; // global state for dashboard visibility
+// Keyboard sequence state for new command-palette shortcut: Alt+Q then W
+let seqAltQPending = false;
+let seqAltQTimer = null;
 
 
 // ─── UI Elements ───────────────────────────────────────────────────────────────
@@ -142,8 +146,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Periodically refresh active process for context-aware suggestions
   setInterval(async () => {
     try {
-      activeProcessName = await invoke('get_active_process_name');
-    } catch { /* command may not exist yet */ }
+      const currentApp = await invoke('get_active_process_name');
+      if (currentApp && !currentApp.toLowerCase().includes('quickpaste')) {
+        activeProcessName = currentApp;
+      }
+    } catch { /* ignored */ }
   }, 3000);
 });
 
@@ -359,7 +366,7 @@ function loadAndDisplay() {
   filteredSnippets.forEach((item, index) => {
     const s = item.s;
     const card = document.createElement('div');
-    card.className = `snippet-item${s.pinned ? ' pinned' : ''}${index === selectedIndex ? ' selected' : ''}${multiSelectMode && selectedSnippets.has(index) ? ' multi-selected' : ''}`;
+    card.className = `snippet-card ${s.pinned ? 'pinned-card' : ''} ${index === selectedIndex ? 'selected-card' : ''} ${multiSelectMode && selectedSnippets.has(index) ? 'multi-selected' : ''}`;
     card.draggable = !multiSelectMode;
 
     // Color label border
@@ -688,8 +695,15 @@ window.addEventListener('blur', async () => {
     deferredClipboardText = null;
   }
   if (pinnedWindow) return;
+  // Prevent hide if select dropdown or input is active (avoids WebView2 dropdown blur bug)
+  if (document.activeElement && (document.activeElement.tagName === 'SELECT' || document.activeElement.tagName === 'INPUT')) {
+    return;
+  }
   setTimeout(async () => {
     if (!dialogOverlay.classList.contains('hidden')) return;
+    if (document.activeElement && (document.activeElement.tagName === 'SELECT' || document.activeElement.tagName === 'INPUT')) {
+      return;
+    }
     await appWindow.hide();
   }, 150);
 });
@@ -851,9 +865,21 @@ window.addEventListener('keydown', async e => {
   if (!dialogOverlay.classList.contains('hidden')) return;
   if (settingsOpen) return;
 
-  // 0. Command Palette (Ctrl+K)
-  if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+  // 0. Command Palette (Alt+Q then W)
+  // New shortcut: press Alt+Q, then press W within timeout to open the palette.
+  if (e.altKey && e.key.toLowerCase() === 'q') {
+    // Start sequence wait
     e.preventDefault();
+    seqAltQPending = true;
+    if (seqAltQTimer) clearTimeout(seqAltQTimer);
+    seqAltQTimer = setTimeout(() => { seqAltQPending = false; seqAltQTimer = null; }, 1200);
+    return;
+  }
+
+  if (seqAltQPending && e.key.toLowerCase() === 'w') {
+    e.preventDefault();
+    seqAltQPending = false;
+    if (seqAltQTimer) { clearTimeout(seqAltQTimer); seqAltQTimer = null; }
     openCommandPalette(snippets, {
       newSnippet: () => addBtn.click(),
       openSettings: () => settingsBtn.click(),
@@ -966,7 +992,7 @@ function matchShortcutEvent(e, shortcutStr) {
 }
 
 function scrollToSelected() {
-  const el = listContainer.querySelector('.snippet-item.selected');
+  const el = listContainer.querySelector('.snippet-card.selected-card');
   if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
@@ -1185,7 +1211,8 @@ function showContextMenu(x, y, index, contentForTransform) {
   hideTransformSubmenu();
 
   const menu = document.createElement('div');
-  menu.className = 'fixed z-[9500] rounded-xl py-1 min-w-[160px] bg-d-card border border-d-border shadow-[0_8px_32px_rgba(0,0,0,0.5)] animate-[ctxFadeIn_0.1s_ease]';
+  // add `custom-context-menu` so removeContextMenu() can reliably find and remove it
+  menu.className = 'custom-context-menu fixed z-[9500] rounded-xl py-1 min-w-[160px] bg-d-card border border-d-border shadow-[0_8px_32px_rgba(0,0,0,0.5)] animate-[ctxFadeIn_0.1s_ease]';
 
   const menuW = 170, menuH = 160;
   const safeX = Math.min(x, window.innerWidth  - menuW);
@@ -1336,8 +1363,12 @@ function hideTransformSubmenu() {
 }
 
 // ─── Native Window Dragging ───────────────────────────────────────────────────
+// NOTE: header buttons no longer carry the legacy `.header-btn` class, so the
+// drag-guard must match the actual interactive elements (button/select and
+// their children) or every click on Pin/Dashboard/Settings/Close gets hijacked
+// into a window-drag instead of firing the button's click handler.
 headerFrame.addEventListener('mousedown', async (e) => {
-  if (e.button === 0 && !e.target.closest('.header-btn')) {
+  if (e.button === 0 && !e.target.closest('button, select')) {
     e.preventDefault();
     await appWindow.startDragging();
   }
@@ -1371,7 +1402,8 @@ function getShortcutColorClass(shortcut) {
   for (let i = 0; i < shortcut.length; i++) {
     hash = shortcut.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return `shortcut-color-${Math.abs(hash) % 5}`;
+  const classes = ['shortcut-blue', 'shortcut-green', 'shortcut-orange', 'shortcut-purple', 'shortcut-pink', 'shortcut-teal'];
+  return classes[Math.abs(hash) % classes.length];
 }
 
 function getTypeIcon(type) {
@@ -1421,7 +1453,7 @@ function processStaticPlaceholders(text) {
 async function resolveClipboardPlaceholder(text) {
   if (text.includes('{{pano}}') || text.includes('{clipboard}')) {
     try {
-      const clipText = await window.__TAURI__.clipboard.readText() || '';
+      const clipText = await navigator.clipboard.readText() || '';
       text = text.replace(/\{\{pano\}\}/g, clipText).replace(/\{clipboard\}/g, clipText);
     } catch (e) {
       text = text.replace(/\{\{pano\}\}/g, '').replace(/\{clipboard\}/g, '');
@@ -1621,7 +1653,6 @@ function updateDashboardStats() {
 }
 
 // ─── Dashboard Transition ────────────────────────────────────────────────────────
-let dashboardOpen = false;
 const dashboardBtn = document.getElementById('dashboardBtn');
 
 dashboardBtn.addEventListener('click', () => {
