@@ -1,16 +1,16 @@
 # Graph Report - emirhanmamak-vigilant-telegram  (2026-07-04)
 
 ## Corpus Check
-- 17 files · ~21,654 words
+- 17 files · ~22,623 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 306 nodes · 445 edges · 20 communities (17 shown, 3 thin omitted)
+- 308 nodes · 453 edges · 21 communities (18 shown, 3 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 16 edges (avg confidence: 0.71)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6cc63e38`
+- Built from commit: `2bd72a12`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -32,6 +32,7 @@
 - [[_COMMUNITY_applyTheme|applyTheme]]
 - [[_COMMUNITY_escapeHtml|escapeHtml]]
 - [[_COMMUNITY_formatCharCount|formatCharCount]]
+- [[_COMMUNITY_Tauri + Vanilla|Tauri + Vanilla]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `⚙️ Uygulamadaki Tüm Sistemler ve Çalışma Prensipleri` - 14 edges
@@ -60,19 +61,19 @@
 ## Import Cycles
 - None detected.
 
-## Communities (20 total, 3 thin omitted)
+## Communities (21 total, 3 thin omitted)
 
 ### Community 0 - "main.js"
 Cohesion: 0.02
 Nodes (69): addBtn, appSettings, appWindow, autoPasteToggle, bulkActionBar, bulkCancelBtn, bulkDeleteBtn, bulkStackBtn (+61 more)
 
 ### Community 1 - "features.js"
-Cohesion: 0.07
-Nodes (36): checkAutoPromote(), CONTENT_DETECTORS, CONTEXT_MAP, delay(), detectContentType(), escapeHtmlSimple(), executeChain(), fuzzyFilter() (+28 more)
+Cohesion: 0.08
+Nodes (30): checkAutoPromote(), CONTENT_DETECTORS, CONTEXT_MAP, delay(), detectContentType(), escapeHtmlSimple(), executeChain(), fuzzyFilter() (+22 more)
 
 ### Community 2 - "lib.rs"
 Cohesion: 0.16
-Nodes (36): Result, AppState, capture_foreground_window(), capture_target(), clear_all_data(), copy_and_paste(), copy_only(), export_data() (+28 more)
+Nodes (35): Result, AppState, capture_foreground_window(), capture_target(), clear_all_data(), copy_and_paste(), copy_only(), export_data() (+27 more)
 
 ### Community 3 - "⚙️ Uygulamadaki Tüm Sistemler ve Çalışma Prensipleri"
 Cohesion: 0.11
@@ -84,7 +85,7 @@ Nodes (17): app, security, windows, withGlobalTauri, build, frontendDist, bundle
 
 ### Community 5 - "data_store.rs"
 Cohesion: 0.22
-Nodes (16): Default, PathBuf, default_snippet_type(), get_app_dir(), get_settings_path(), get_snippets_path(), load_settings(), load_snippets() (+8 more)
+Nodes (18): Default, PathBuf, default_snippet_type(), get_app_dir(), get_settings_path(), get_snippets_path(), load_settings(), load_snippets() (+10 more)
 
 ### Community 6 - "process_new_clipboard_text"
 Cohesion: 0.20
@@ -114,6 +115,10 @@ Nodes (5): description, identifier, permissions, $schema, windows
 Cohesion: 0.83
 Nodes (4): handleOutsideContextClick(), hideTransformSubmenu(), removeContextMenu(), showContextMenu()
 
+### Community 13 - "Tauri + Vanilla"
+Cohesion: 0.33
+Nodes (6): getCustomPlaceholders(), performPaste(), promptPlaceholders(), resolveClipboardPlaceholder(), selectAndPaste(), showToast()
+
 ### Community 14 - "applyTheme"
 Cohesion: 0.67
 Nodes (3): applyTheme(), applySettings(), saveCurrentSettings()
@@ -137,6 +142,6 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `main.js` be split into smaller, more focused modules?**
   _Cohesion score 0.023809523809523808 - nodes in this community are weakly interconnected._
 - **Should `features.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.0664451827242525 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07657657657657657 - nodes in this community are weakly interconnected._
 - **Should `⚙️ Uygulamadaki Tüm Sistemler ve Çalışma Prensipleri` be split into smaller, more focused modules?**
   _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._

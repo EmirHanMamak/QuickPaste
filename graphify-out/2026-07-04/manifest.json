@@ -20,28 +20,28 @@
     "semantic_hash": ""
   },
   "src-tauri/src/clipboard_manager.rs": {
-    "mtime": 1783167424.8863952,
-    "ast_hash": "8e975832b26a053137684d26bedf7771",
+    "mtime": 1783167733.1838777,
+    "ast_hash": "da25a21ec1b629eb7709ff3386f54f38",
     "semantic_hash": ""
   },
   "src-tauri/src/clipboard_monitor.rs": {
-    "mtime": 1783167424.8874044,
-    "ast_hash": "0a9ef3b3a99e23d514cf206533af1573",
+    "mtime": 1783167733.1854682,
+    "ast_hash": "ce44f5a449ae4f28059d3b1ffdf829e1",
     "semantic_hash": ""
   },
   "src-tauri/src/data_store.rs": {
-    "mtime": 1783167424.888407,
-    "ast_hash": "ddb88e8f669f88eddc6534041f592958",
+    "mtime": 1783167733.1864786,
+    "ast_hash": "fd31a35931c0bbb192f0ce20093e8b07",
     "semantic_hash": ""
   },
   "src-tauri/src/keyboard_hook.rs": {
-    "mtime": 1783167424.8894067,
-    "ast_hash": "17b7a1d9f13e7d4a60964ceece710940",
+    "mtime": 1783167733.187991,
+    "ast_hash": "851cb305e2f77c8473e544945b7437a5",
     "semantic_hash": ""
   },
   "src-tauri/src/lib.rs": {
-    "mtime": 1783167424.8914287,
-    "ast_hash": "2e1b25824a58915f8fb28bb0b124f2f8",
+    "mtime": 1783167733.1895115,
+    "ast_hash": "65fbd5f37e604b55d58673d7672dc36e",
     "semantic_hash": ""
   },
   "src-tauri/src/main.rs": {
@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1783167424.882849,
-    "ast_hash": "3c092fc557a35a9147710832987e74aa",
+    "mtime": 1783167733.1816473,
+    "ast_hash": "e37ff9e4dc996cf65c0084b6d49e431f",
     "semantic_hash": ""
   },
   "src/index.html": {
@@ -167,6 +167,11 @@
   "tailwind.config.js": {
     "mtime": 1783160353.8032727,
     "ast_hash": "1de6285244c099d3aecd868574635019",
+    "semantic_hash": ""
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1783167733.179798,
+    "ast_hash": "173f500b3f60afa341985e67b7c2d1bc",
     "semantic_hash": ""
   }
 }
