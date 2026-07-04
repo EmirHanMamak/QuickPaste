@@ -46,7 +46,7 @@ pub fn get_active_process_name() -> String {
 
     unsafe {
         let hwnd = GetForegroundWindow();
-        if hwnd == std::ptr::null_mut() {
+        if hwnd.is_null() {
             return "Unknown".to_string();
         }
         let mut pid: u32 = 0;
@@ -56,7 +56,7 @@ pub fn get_active_process_name() -> String {
         }
         
         let process_handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid);
-        if process_handle == std::ptr::null_mut() {
+        if process_handle.is_null() {
             return "Unknown".to_string();
         }
         
@@ -67,7 +67,7 @@ pub fn get_active_process_name() -> String {
         
         if success != 0 {
             let path = String::from_utf16_lossy(&buffer[..size as usize]);
-            if let Some(filename) = path.split('\\').last() {
+            if let Some(filename) = path.split('\\').next_back() {
                 return filename.to_string();
             }
         }
@@ -205,7 +205,10 @@ unsafe fn release_all_modifiers() {
             time: 0,
             dwExtraInfo: 0,
         };
-        SendInput(1, &input, std::mem::size_of::<INPUT>() as i32);
+        let injected = SendInput(1, &input, std::mem::size_of::<INPUT>() as i32);
+        if injected == 0 {
+            eprintln!("[QuickPaste] release_all_modifiers: SendInput failed for vk=0x{:X}", vk);
+        }
     }
 }
 
@@ -214,14 +217,20 @@ unsafe fn send_ctrl_v() {
     let ctrl_down = make_keyboard_input(0x11, 0); // VK_CONTROL
     let v_down = make_keyboard_input(0x56, 0);    // V key
     let inputs_down = [ctrl_down, v_down];
-    SendInput(2, inputs_down.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+    let injected_down = SendInput(2, inputs_down.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+    if injected_down == 0 {
+        eprintln!("[QuickPaste] clipboard_manager::send_ctrl_v: SendInput failed (down)");
+    }
 
     thread::sleep(Duration::from_millis(15));
 
     let v_up = make_keyboard_input(0x56, KEYEVENTF_KEYUP);
     let ctrl_up = make_keyboard_input(0x11, KEYEVENTF_KEYUP);
     let inputs_up = [v_up, ctrl_up];
-    SendInput(2, inputs_up.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+    let injected_up = SendInput(2, inputs_up.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+    if injected_up == 0 {
+        eprintln!("[QuickPaste] clipboard_manager::send_ctrl_v: SendInput failed (up)");
+    }
 }
 
 #[cfg(target_os = "windows")]

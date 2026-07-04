@@ -105,7 +105,7 @@ pub fn start_keyboard_hook() {
                             typed_buffer.pop();
                         } else if vk == 0x0D || vk == 0x1B || vk == 0x09 { // Enter, Escape, Tab
                             typed_buffer.clear();
-                        } else if vk >= 0x10 && vk <= 0x12 { // Shift, Ctrl, Alt
+                        } else if (0x10..=0x12).contains(&vk) { // Shift, Ctrl, Alt
                             // ignore modifier keys alone
                         } else {
                             typed_buffer.clear();
@@ -125,7 +125,7 @@ pub fn start_keyboard_hook() {
                 std::ptr::null_mut(),
                 0
             );
-            if hook == std::ptr::null_mut() {
+            if hook.is_null() {
                 println!("[QuickPaste] Hook installation failed");
                 return;
             }
@@ -144,16 +144,15 @@ pub fn start_keyboard_hook() {
 }
 
 unsafe extern "system" fn keyboard_hook_proc(code: i32, wparam: usize, lparam: isize) -> isize {
-    if code >= 0 && !SUSPEND_HOOK.load(Ordering::SeqCst) {
-        if wparam == WM_KEYDOWN as usize || wparam == WM_SYSKEYDOWN as usize {
-            let info = *(lparam as *const KBDLLHOOKSTRUCT);
-            let vk = info.vkCode;
-            let shift = GetKeyState(0x10) < 0;
-            
-            if let Ok(sender_guard) = EVENT_SENDER.lock() {
-                if let Some(ref sender) = *sender_guard {
-                    let _ = sender.send(HookEvent::KeyDown { vk, shift });
-                }
+    if code >= 0 && !SUSPEND_HOOK.load(Ordering::SeqCst)
+        && (wparam == WM_KEYDOWN as usize || wparam == WM_SYSKEYDOWN as usize) {
+        let info = *(lparam as *const KBDLLHOOKSTRUCT);
+        let vk = info.vkCode;
+        let shift = GetKeyState(0x10) < 0;
+        
+        if let Ok(sender_guard) = EVENT_SENDER.lock() {
+            if let Some(ref sender) = *sender_guard {
+                let _ = sender.send(HookEvent::KeyDown { vk, shift });
             }
         }
     }
@@ -161,6 +160,12 @@ unsafe extern "system" fn keyboard_hook_proc(code: i32, wparam: usize, lparam: i
 }
 
 fn map_vk_to_char(vk: u32, _shift: bool) -> Option<char> {
+    // Filter out known non-printable/control keys to avoid unnecessary ToUnicode calls
+    const CONTROL_KEYS: [u32; 7] = [0x08, 0x09, 0x0D, 0x10, 0x11, 0x12, 0x1B];
+    if CONTROL_KEYS.contains(&vk) {
+        return None;
+    }
+
     unsafe {
         let mut keyboard_state = [0u8; 256];
         GetKeyboardState(keyboard_state.as_mut_ptr());
@@ -213,7 +218,10 @@ unsafe fn send_backspaces(count: usize) {
         let bs_down = make_keyboard_input(0x08, 0); // VK_BACK
         let bs_up = make_keyboard_input(0x08, 0x0002); // KEYEVENTF_KEYUP
         let inputs = [bs_down, bs_up];
-        SendInput(2, inputs.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+        let injected = SendInput(2, inputs.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+        if injected == 0 {
+            eprintln!("[QuickPaste] send_backspaces: SendInput failed for VK_BACK");
+        }
         thread::sleep(Duration::from_millis(5));
     }
 }
@@ -222,12 +230,18 @@ unsafe fn send_ctrl_v() {
     let ctrl_down = make_keyboard_input(0x11, 0); // VK_CONTROL
     let v_down = make_keyboard_input(0x56, 0);    // V key
     let inputs_down = [ctrl_down, v_down];
-    SendInput(2, inputs_down.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+    let injected_down = SendInput(2, inputs_down.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+    if injected_down == 0 {
+        eprintln!("[QuickPaste] send_ctrl_v: SendInput failed to inject ctrl+v down");
+    }
 
     thread::sleep(Duration::from_millis(15));
 
     let v_up = make_keyboard_input(0x56, 0x0002); // KEYEVENTF_KEYUP
     let ctrl_up = make_keyboard_input(0x11, 0x0002); // KEYEVENTF_KEYUP
     let inputs_up = [v_up, ctrl_up];
-    SendInput(2, inputs_up.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+    let injected_up = SendInput(2, inputs_up.as_ptr(), std::mem::size_of::<INPUT>() as i32);
+    if injected_up == 0 {
+        eprintln!("[QuickPaste] send_ctrl_v: SendInput failed to inject ctrl+v up");
+    }
 }

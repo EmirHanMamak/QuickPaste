@@ -156,13 +156,13 @@ impl ClipboardMonitor {
                     std::ptr::null(),
                     0,
                     0, 0, 0, 0,
-                    -3 as isize as _, // HWND_MESSAGE
+                    -3_isize as _, // HWND_MESSAGE
                     std::ptr::null_mut(),
                     std::ptr::null_mut(),
                     std::ptr::null(),
                 );
 
-                if hwnd != std::ptr::null_mut() {
+                if !hwnd.is_null() {
                     if let Ok(mut hw_guard) = MONITOR_HWND.lock() {
                         *hw_guard = hwnd as isize;
                     }
@@ -212,7 +212,7 @@ impl ClipboardMonitor {
         }
         self.running.store(false, Ordering::SeqCst);
         
-        let hwnd = *MONITOR_HWND.lock().unwrap();
+        let hwnd = *MONITOR_HWND.lock().unwrap_or_else(|e| e.into_inner());
         if hwnd != 0 {
             use windows_sys::Win32::UI::WindowsAndMessaging::PostMessageW;
             unsafe {

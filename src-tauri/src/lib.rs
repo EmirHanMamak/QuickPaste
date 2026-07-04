@@ -55,9 +55,9 @@ fn is_own_window(_hwnd: isize) -> bool {
 /// Capture the currently-active foreground window but reject our own handle or system shell windows.
 fn capture_target(state: &AppState) {
     let hwnd = clipboard_manager::get_foreground_window();
-    let own = *state.own_hwnd.lock().unwrap();
-    if hwnd != 0 && hwnd != own && !is_own_window(hwnd) && !clipboard_manager::is_system_window(hwnd) {
-        let mut prev = state.previous_window.lock().unwrap();
+    let own = *state.own_hwnd.lock().unwrap_or_else(|e| e.into_inner());
+    if hwnd != 0 && hwnd != own && !clipboard_manager::is_system_window(hwnd) {
+        let mut prev = state.previous_window.lock().unwrap_or_else(|e| e.into_inner());
         *prev = hwnd;
     }
 }
@@ -100,7 +100,7 @@ fn reregister_all_shortcuts(app: &AppHandle) -> Result<(), String> {
     // Register Alt+1..9 favorite slots
     for snippet in &snippets {
         if let Some(slot) = snippet.slot {
-            if slot >= 1 && slot <= 9 {
+            if (1..=9).contains(&slot) {
                 let formatted = format!("Alt+{}", slot);
                 if let Ok(shortcut) = Shortcut::from_str(&formatted) {
                     let _ = global_shortcut.register(shortcut);
@@ -151,57 +151,94 @@ fn get_storage_path() -> String {
 #[tauri::command]
 fn capture_foreground_window(state: State<'_, AppState>) -> isize {
     let hwnd = clipboard_manager::get_foreground_window();
-    let own = *state.own_hwnd.lock().unwrap();
+    let own = *state.own_hwnd.lock().unwrap_or_else(|e| e.into_inner());
     if hwnd != 0 && hwnd != own && !clipboard_manager::is_system_window(hwnd) {
-        let mut prev = state.previous_window.lock().unwrap();
+        let mut prev = state.previous_window.lock().unwrap_or_else(|e| e.into_inner());
         *prev = hwnd;
     }
-    *state.previous_window.lock().unwrap()
+    *state.previous_window.lock().unwrap_or_else(|e| e.into_inner())
 }
 
 #[tauri::command]
 fn copy_and_paste(state: State<'_, AppState>, content: String, hwnd: Option<isize>, skip_copy: bool) {
+    let content_len = content.len();
+
     if !skip_copy {
-        // Retry writing to clipboard multiple times if locked
+        // Retry writing to clipboard multiple times with exponential backoff
         let mut success = false;
-        for _ in 0..5 {
-            if let Ok(mut ctx) = arboard::Clipboard::new() {
-                if ctx.set_text(content.clone()).is_ok() {
-                    success = true;
-                    break;
+        let mut last_attempt = 0;
+        let mut wait_ms = 10u64;
+        for attempt in 1..=6 {
+            last_attempt = attempt;
+            match arboard::Clipboard::new() {
+                Ok(mut ctx) => match ctx.set_text(content.clone()) {
+                    Ok(_) => {
+                        success = true;
+                        break;
+                    }
+                    Err(e) => {
+                        eprintln!("[QuickPaste] Clipboard set_text failed (attempt {}): {}", attempt, e);
+                    }
+                },
+                Err(e) => {
+                    eprintln!("[QuickPaste] Clipboard init failed (attempt {}): {}", attempt, e);
                 }
             }
-            thread::sleep(Duration::from_millis(30));
+
+            thread::sleep(Duration::from_millis(wait_ms));
+            wait_ms = (wait_ms * 2).min(500);
         }
 
         if !success {
-            println!("[QuickPaste] Error: Failed to write content to clipboard");
+            eprintln!("[QuickPaste] Error: Failed to write {} bytes to clipboard after {} attempts", content_len, last_attempt);
+        } else {
+            println!("[QuickPaste] Clipboard write succeeded ({} bytes) after {} attempts", content_len, last_attempt);
         }
+    } else {
+        println!("[QuickPaste] Skipping clipboard write as requested (content_len={})", content_len);
     }
 
-    let target = hwnd.unwrap_or_else(|| *state.previous_window.lock().unwrap());
+    let target = hwnd.unwrap_or_else(|| *state.previous_window.lock().unwrap_or_else(|e| e.into_inner()));
     if target != 0 {
         // Sleep slightly to let the clipboard register before activating focus and pasting
         thread::sleep(Duration::from_millis(60));
+        eprintln!("[QuickPaste] Pasting to target hwnd={} (content_len={})", target, content_len);
         clipboard_manager::restore_focus_and_paste(target);
     }
 }
 
 #[tauri::command]
 fn copy_only(content: String) {
-    for _ in 0..5 {
-        if let Ok(mut ctx) = arboard::Clipboard::new() {
-            if ctx.set_text(content.clone()).is_ok() {
-                break;
+    let content_len = content.len();
+    let mut success = false;
+    let mut wait_ms = 10u64;
+    for attempt in 1..=6 {
+        match arboard::Clipboard::new() {
+            Ok(mut ctx) => match ctx.set_text(content.clone()) {
+                Ok(_) => {
+                    success = true;
+                    println!("[QuickPaste] copy_only: wrote {} bytes on attempt {}", content_len, attempt);
+                    break;
+                }
+                Err(e) => {
+                    eprintln!("[QuickPaste] copy_only: set_text failed (attempt {}): {}", attempt, e);
+                }
+            },
+            Err(e) => {
+                eprintln!("[QuickPaste] copy_only: Clipboard init failed (attempt {}): {}", attempt, e);
             }
         }
-        thread::sleep(Duration::from_millis(30));
+        thread::sleep(Duration::from_millis(wait_ms));
+        wait_ms = (wait_ms * 2).min(500);
+    }
+    if !success {
+        eprintln!("[QuickPaste] copy_only: failed to write {} bytes after attempts", content_len);
     }
 }
 
 #[tauri::command]
 fn toggle_clipboard_monitor(app_handle: AppHandle, state: State<'_, AppState>, enabled: bool) {
-    let monitor = state.monitor.lock().unwrap();
+    let monitor = state.monitor.lock().unwrap_or_else(|e| e.into_inner());
     if enabled {
         monitor.start(app_handle);
     } else {
@@ -214,13 +251,13 @@ fn toggle_clipboard_monitor(app_handle: AppHandle, state: State<'_, AppState>, e
 
 #[tauri::command]
 fn set_pinned(state: State<'_, AppState>, value: bool) {
-    let mut pinned = state.pinned.lock().unwrap();
+    let mut pinned = state.pinned.lock().unwrap_or_else(|e| e.into_inner());
     *pinned = value;
 }
 
 #[tauri::command]
 fn get_pinned(state: State<'_, AppState>) -> bool {
-    *state.pinned.lock().unwrap()
+    *state.pinned.lock().unwrap_or_else(|e| e.into_inner())
 }
 
 #[tauri::command]
@@ -449,7 +486,7 @@ pub fn run() {
                         // Check if one of the snippet favorite slot Alt+1..9 hotkeys is pressed
                         for snippet in &snippets {
                             if let Some(slot) = snippet.slot {
-                                if slot >= 1 && slot <= 9 {
+                                if (1..=9).contains(&slot) {
                                     let formatted = format!("Alt+{}", slot);
                                     if let Ok(slot_shortcut) = Shortcut::from_str(&formatted) {
                                         if shortcut == &slot_shortcut {
@@ -478,7 +515,7 @@ pub fn run() {
             let settings = data_store::load_settings();
             if settings.clipboard_history_enabled {
                 let state = app.state::<AppState>();
-                let monitor = state.monitor.lock().unwrap();
+                let monitor = state.monitor.lock().unwrap_or_else(|e| e.into_inner());
                 monitor.start(app.handle().clone());
             }
 
@@ -491,13 +528,37 @@ pub fn run() {
             // Register all global shortcuts (main toggle + snippet shortcuts)
             let _ = reregister_all_shortcuts(app.handle());
 
-            // System tray
-            let quit_i = tauri::menu::MenuItem::with_id(app, "quit", "Quit", true, None::<&str>).unwrap();
-            let show_i = tauri::menu::MenuItem::with_id(app, "show", "Show QuickPaste", true, None::<&str>).unwrap();
-            let menu = tauri::menu::Menu::with_items(app, &[&show_i, &quit_i]).unwrap();
+            // System tray: create menu items safely to avoid panics on failure
+            let quit_i = match tauri::menu::MenuItem::with_id(app, "quit", "Quit", true, None::<&str>) {
+                Ok(mi) => mi,
+                Err(e) => {
+                    eprintln!("[QuickPaste] Failed to create tray menu item 'quit': {}", e);
+                    return Ok(());
+                }
+            };
+            let show_i = match tauri::menu::MenuItem::with_id(app, "show", "Show QuickPaste", true, None::<&str>) {
+                Ok(mi) => mi,
+                Err(e) => {
+                    eprintln!("[QuickPaste] Failed to create tray menu item 'show': {}", e);
+                    return Ok(());
+                }
+            };
+            let menu = match tauri::menu::Menu::with_items(app, &[&show_i, &quit_i]) {
+                Ok(m) => m,
+                Err(e) => {
+                    eprintln!("[QuickPaste] Failed to create tray menu: {}", e);
+                    return Ok(());
+                }
+            };
 
-            let _tray = tauri::tray::TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
+            let mut tray_builder = tauri::tray::TrayIconBuilder::new();
+            if let Some(icon) = app.default_window_icon() {
+                tray_builder = tray_builder.icon(icon.clone());
+            } else {
+                eprintln!("[QuickPaste] No default window icon available for tray; proceeding without icon.");
+            }
+
+            let tray_builder = tray_builder
                 .menu(&menu)
                 .on_menu_event(|app, event| {
                     match event.id.as_ref() {
@@ -528,8 +589,15 @@ pub fn run() {
                             }
                         }
                     }
-                })
-                .build(app)?;
+                });
+
+            let _tray = match tray_builder.build(app) {
+                Ok(t) => t,
+                Err(e) => {
+                    eprintln!("[QuickPaste] Failed to build tray icon: {}", e);
+                    return Ok(());
+                }
+            };
 
             Ok(())
         })
