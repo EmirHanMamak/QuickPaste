@@ -73,6 +73,16 @@ impl Default for Settings {
 }
 
 fn get_app_dir() -> PathBuf {
+    // Allow overriding the data directory for tests and portability via env var
+    if let Ok(dir) = std::env::var("QUICKPASTE_APP_DIR") {
+        let mut path = PathBuf::from(dir);
+        path.push("QuickPaste");
+        if !path.exists() {
+            let _ = fs::create_dir_all(&path);
+        }
+        return path;
+    }
+
     let mut path = dirs::data_dir().unwrap_or_else(|| PathBuf::from("."));
     path.push("QuickPaste");
     if !path.exists() {
@@ -192,5 +202,61 @@ pub fn save_settings(settings: &Settings) {
         if let Ok(mut file) = File::create(&path) {
             let _ = file.write_all(content.as_bytes());
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+    use std::fs;
+
+    #[test]
+    fn save_and_load_snippets_roundtrip() {
+        let tmp = env::temp_dir().join(format!("quickpaste_test_{}", std::process::id()));
+        env::set_var("QUICKPASTE_APP_DIR", &tmp);
+        if tmp.exists() { let _ = fs::remove_dir_all(&tmp); }
+
+        let defaults = vec![Snippet {
+            title: "Test".to_string(),
+            content: "Hello".to_string(),
+            pinned: false,
+            use_count: 0,
+            category: Some("Test".to_string()),
+            tags: vec!["t".to_string()],
+            shortcut: None,
+            is_secret: false,
+            snippet_type: "text".to_string(),
+            color: None,
+            created_at: 0,
+            last_used_at: 0,
+            trigger: None,
+            slot: None,
+            source_app: None,
+        }];
+
+        save_snippets(&defaults);
+        let loaded = load_snippets();
+        assert_eq!(loaded.len(), 1);
+        assert_eq!(loaded[0].title, "Test");
+
+        let _ = fs::remove_dir_all(get_app_dir());
+        env::remove_var("QUICKPASTE_APP_DIR");
+    }
+
+    #[test]
+    fn save_and_load_settings_roundtrip() {
+        let tmp = env::temp_dir().join(format!("quickpaste_test_{}", std::process::id()));
+        env::set_var("QUICKPASTE_APP_DIR", &tmp);
+        if tmp.exists() { let _ = fs::remove_dir_all(&tmp); }
+
+        let mut s = Settings::default();
+        s.dark_mode = true;
+        save_settings(&s);
+        let loaded = load_settings();
+        assert_eq!(loaded.dark_mode, true);
+
+        let _ = fs::remove_dir_all(get_app_dir());
+        env::remove_var("QUICKPASTE_APP_DIR");
     }
 }
