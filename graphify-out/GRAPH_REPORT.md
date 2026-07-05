@@ -1,16 +1,16 @@
 # Graph Report - insta-paste-tauri  (2026-07-05)
 
 ## Corpus Check
-- 19 files · ~79,056 words
+- 19 files · ~79,872 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 482 nodes · 879 edges · 46 communities (20 shown, 26 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.5)
+- 484 nodes · 896 edges · 46 communities (20 shown, 26 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.7)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ca5fd36a`
+- Built from commit: `0dabc156`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -72,16 +72,16 @@
 10. `Settings` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `AppState` --references--> `ClipboardMonitor`  [EXTRACTED]
-  src-tauri/src/lib.rs → src-tauri/src/clipboard_monitor.rs
-- `ImportedData` --references--> `Snippet`  [EXTRACTED]
-  src-tauri/src/lib.rs → src-tauri/src/data_store.rs
-- `load_snippets()` --references--> `Snippet`  [EXTRACTED]
-  src-tauri/src/lib.rs → src-tauri/src/data_store.rs
-- `save_snippets()` --references--> `Snippet`  [EXTRACTED]
-  src-tauri/src/lib.rs → src-tauri/src/data_store.rs
-- `bootstrap_runtime()` --references--> `Snippet`  [EXTRACTED]
-  src-tauri/src/text_expansion.rs → src-tauri/src/data_store.rs
+- `loadAndDisplay()` --calls--> `fuzzyFilter()`  [INFERRED]
+  src/main.js → src/features.js
+- `processStaticPlaceholders()` --calls--> `processInlineExpressions()`  [INFERRED]
+  src/main.js → src/features.js
+- `processStaticPlaceholders()` --calls--> `resolveLinkedSnippets()`  [INFERRED]
+  src/main.js → src/features.js
+- `processStaticPlaceholders()` --calls--> `processConditionalTemplates()`  [INFERRED]
+  src/main.js → src/features.js
+- `loadAndDisplay()` --calls--> `sortByContext()`  [INFERRED]
+  src/main.js → src/features.js
 
 ## Import Cycles
 - None detected.
@@ -94,7 +94,7 @@ Nodes (71): addBtn, appSettings, appWindow, autoPasteToggle, bulkActionBar, bulk
 
 ### Community 1 - "features.js"
 Cohesion: 0.07
-Nodes (26): applyTheme(), buildCustomTheme(), checkAutoPromote(), CONTENT_DETECTORS, CONTEXT_MAP, delay(), detectContentType(), escapeHtmlSimple() (+18 more)
+Nodes (36): applyTheme(), buildCustomTheme(), buildThemeTokens(), checkAutoPromote(), CONTENT_DETECTORS, CONTEXT_MAP, delay(), detectContentType() (+28 more)
 
 ### Community 2 - "lib.rs"
 Cohesion: 0.14
@@ -150,14 +150,14 @@ Nodes (14): APP_FILTER_LABELS, APP_FILTER_PRESETS, appFilterLabel(), appFilterSu
 
 ### Community 29 - "selectAndPaste"
 Cohesion: 0.18
-Nodes (12): getCustomPlaceholders(), loadAndDisplay(), performPaste(), processClipboardEntry(), processStaticPlaceholders(), promptPlaceholders(), refreshCategoryFilter(), reloadData() (+4 more)
+Nodes (12): fuzzyFilter(), sortByContext(), getCustomPlaceholders(), loadAndDisplay(), performPaste(), promptPlaceholders(), refreshCategoryFilter(), reloadData() (+4 more)
 
 ### Community 35 - "applyPanelHeaderState"
 Cohesion: 0.50
 Nodes (4): applyPanelHeaderState(), resizeForSidePanel(), returnToMainPage(), setHeaderButtonActive()
 
 ## Knowledge Gaps
-- **129 isolated node(s):** `appWindow`, `snippets`, `filteredSnippets`, `appSettings`, `selectedSnippets` (+124 more)
+- **130 isolated node(s):** `$schema`, `productName`, `version`, `identifier`, `frontendDist` (+125 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **26 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -170,11 +170,11 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **Why does `AppState` connect `lib.rs` to `process_new_clipboard_text`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **What connects `appWindow`, `snippets`, `filteredSnippets` to the rest of the system?**
-  _129 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `$schema`, `productName`, `version` to the rest of the system?**
+  _130 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `main.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.022222222222222223 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.022727272727272728 - nodes in this community are weakly interconnected._
 - **Should `features.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.07435897435897436 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07293868921775898 - nodes in this community are weakly interconnected._
 - **Should `lib.rs` be split into smaller, more focused modules?**
   _Cohesion score 0.1416490486257928 - nodes in this community are weakly interconnected._

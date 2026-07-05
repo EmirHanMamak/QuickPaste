@@ -25,6 +25,36 @@
         "visible": true
       },
       {
+        "label": "welcome",
+        "title": "QuickPaste Welcome",
+        "url": "welcome.html",
+        "width": 1200,
+        "height": 900,
+        "center": true,
+        "minWidth": 900,
+        "minHeight": 700,
+        "resizable": true,
+        "decorations": false,
+        "transparent": false,
+        "skipTaskbar": true,
+        "visible": false
+      },
+      {
+        "label": "suggestions",
+        "title": "QuickPaste Suggestions",
+        "url": "suggestions.html",
+        "width": 420,
+        "height": 280,
+        "minWidth": 320,
+        "minHeight": 220,
+        "resizable": false,
+        "decorations": false,
+        "transparent": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false
+      },
+      {
         "label": "launcher",
         "title": "QuickPaste Launcher",
         "width": 680,

@@ -368,6 +368,41 @@ pub fn restore_focus_and_paste(hwnd_val: isize) -> bool {
     }
 }
 
+#[cfg(target_os = "windows")]
+pub fn restore_focus(hwnd_val: isize) -> bool {
+    if hwnd_val == 0 {
+        return false;
+    }
+    let hwnd = hwnd_val as windows_sys::Win32::Foundation::HWND;
+    unsafe {
+        release_all_modifiers();
+        thread::sleep(Duration::from_millis(40));
+
+        if IsIconic(hwnd) != 0 {
+            ShowWindowAsync(hwnd, SW_RESTORE);
+            thread::sleep(Duration::from_millis(40));
+        }
+
+        let mut success_fg = false;
+        for _ in 0..4 {
+            SetForegroundWindow(hwnd);
+            BringWindowToTop(hwnd);
+            thread::sleep(Duration::from_millis(70));
+            if GetForegroundWindow() == hwnd {
+                success_fg = true;
+                break;
+            }
+        }
+
+        if !success_fg {
+            eprintln!("[QuickPaste] restore_focus: couldn't bring hwnd to foreground");
+        }
+
+        thread::sleep(Duration::from_millis(140));
+        success_fg
+    }
+}
+
 #[cfg(not(target_os = "windows"))]
 pub fn restore_focus_and_paste(window_id_val: isize) -> bool {
     use std::process::Command;

@@ -2,7 +2,7 @@ use std::sync::Mutex;
 use std::str::FromStr;
 use std::thread;
 use std::time::Duration;
-use tauri::{AppHandle, Emitter, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State, WebviewUrl};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 #[cfg(target_os = "windows")]
@@ -21,6 +21,30 @@ mod keyboard_hook;
 
 use data_store::{Snippet, Settings};
 use text_expansion::TextExpansion;
+
+#[cfg(test)]
+pub(crate) mod test_support {
+    use std::path::PathBuf;
+    use std::sync::{Mutex, OnceLock};
+
+    pub fn env_lock() -> &'static Mutex<()> {
+        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+        LOCK.get_or_init(|| Mutex::new(()))
+    }
+
+    pub fn temp_dir(prefix: &str) -> PathBuf {
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        std::env::temp_dir().join(format!(
+            "quickpaste_test_{}_{}_{}",
+            prefix,
+            std::process::id(),
+            stamp
+        ))
+    }
+}
 
 struct AppState {
     own_hwnd: Mutex<isize>,
@@ -77,6 +101,42 @@ fn show_window(win: &tauri::WebviewWindow, state: &AppState) {
     capture_target(state);
     let _ = win.show();
     let _ = win.set_focus();
+}
+
+fn ensure_welcome_window(app: &AppHandle) -> Result<tauri::WebviewWindow, String> {
+    if let Some(existing) = app.get_webview_window("welcome") {
+        return Ok(existing);
+    }
+
+    tauri::WebviewWindowBuilder::new(app, "welcome", WebviewUrl::App("welcome.html".into()))
+        .title("QuickPaste Welcome")
+        .inner_size(1200.0, 900.0)
+        .min_inner_size(900.0, 700.0)
+        .center()
+        .resizable(true)
+        .decorations(false)
+        .transparent(false)
+        .visible(false)
+        .build()
+        .map_err(|e| e.to_string())
+}
+
+fn show_welcome_window(app: &AppHandle, fullscreen: bool) -> Result<(), String> {
+    let win = ensure_welcome_window(app)?;
+    let _ = win.show();
+    let _ = win.set_fullscreen(fullscreen);
+    let _ = win.set_focus();
+    if let Some(main) = app.get_webview_window("main") {
+        let _ = main.hide();
+    }
+    Ok(())
+}
+
+fn hide_welcome_window(app: &AppHandle) {
+    if let Some(win) = app.get_webview_window("welcome") {
+        let _ = win.set_fullscreen(false);
+        let _ = win.hide();
+    }
 }
 
 /// Dynamically reconciles all registered global shortcuts:
@@ -161,6 +221,11 @@ fn get_active_process_name() -> String {
 #[tauri::command]
 fn load_text_expansions() -> Vec<TextExpansion> {
     text_expansion::load_text_expansions()
+}
+
+#[tauri::command]
+fn load_text_expansion_catalog(locale: Option<String>) -> text_expansion::TextExpansionCatalog {
+    text_expansion::load_text_expansion_catalog(locale)
 }
 
 #[tauri::command]
@@ -566,9 +631,28 @@ fn open_launcher_window(app: AppHandle, state: State<'_, AppState>) {
 
 #[tauri::command]
 fn open_main_window(app: AppHandle, state: State<'_, AppState>) {
+    hide_welcome_window(&app);
     if let Some(win) = app.get_webview_window("main") {
         show_window(&win, &state);
     }
+}
+
+#[tauri::command]
+fn open_welcome_window(app: AppHandle, fullscreen: Option<bool>) -> Result<(), String> {
+    show_welcome_window(&app, fullscreen.unwrap_or(true))
+}
+
+#[tauri::command]
+fn close_welcome_window(app: AppHandle, state: State<'_, AppState>) {
+    hide_welcome_window(&app);
+    if let Some(main) = app.get_webview_window("main") {
+        show_window(&main, &state);
+    }
+}
+
+#[tauri::command]
+fn apply_text_expansion_trigger(trigger: String, delete_graphemes: usize) -> Result<(), String> {
+    keyboard_hook::apply_text_expansion_trigger(trigger, delete_graphemes)
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -656,6 +740,15 @@ pub fn run() {
 
             // Start clipboard monitor if enabled
             let settings = data_store::load_settings();
+            let should_show_welcome = !settings.text_expansion_onboarding_completed;
+
+            let _ = ensure_welcome_window(&app.handle());
+            if should_show_welcome {
+                let _ = show_welcome_window(&app.handle(), true);
+            } else {
+                hide_welcome_window(&app.handle());
+            }
+
             if settings.clipboard_history_enabled {
                 let state = app.state::<AppState>();
                 let monitor = state.monitor.lock().unwrap_or_else(|e| e.into_inner());
@@ -666,7 +759,7 @@ pub fn run() {
             let snippets = data_store::load_snippets();
             let _ = text_expansion::bootstrap_runtime(&snippets);
             #[cfg(target_os = "windows")]
-            keyboard_hook::start_keyboard_hook();
+            keyboard_hook::start_keyboard_hook_with_app(Some(app.handle().clone()));
 
             // Register all global shortcuts (main toggle + snippet shortcuts)
             let _ = reregister_all_shortcuts(app.handle());
@@ -752,6 +845,7 @@ pub fn run() {
             get_storage_path,
             get_active_process_name,
             load_text_expansions,
+            load_text_expansion_catalog,
             save_text_expansions,
             export_text_expansions,
             import_text_expansions,
@@ -770,6 +864,9 @@ pub fn run() {
             set_window_opacity,
             open_launcher_window,
             open_main_window,
+            open_welcome_window,
+            close_welcome_window,
+            apply_text_expansion_trigger,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

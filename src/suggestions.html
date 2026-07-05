@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickPaste Suggestions</title>
+  <link rel="stylesheet" href="./fonts.css">
+  <link rel="stylesheet" href="./assets/tailwind.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --qp-bg: #12131a;
+      --qp-surface: #1b1e29;
+      --qp-border: #31364a;
+      --qp-text: #e7e7ea;
+      --qp-muted: #9aa0b4;
+      --qp-primary: #4aa3ff;
+      --qp-primary-soft: rgba(74, 163, 255, 0.14);
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: transparent;
+      color: var(--qp-text);
+      font-family: Inter, sans-serif;
+      overflow: hidden;
+    }
+    .shell {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(18,19,26,0.98), rgba(14,15,20,0.98));
+      border: 1px solid var(--qp-border);
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .search {
+      background: var(--qp-surface);
+      border: 1px solid var(--qp-border);
+      color: var(--qp-text);
+      outline: none;
+    }
+    .item {
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.03);
+      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+    .item:hover {
+      transform: translateY(-1px);
+      border-color: rgba(74, 163, 255, 0.35);
+      background: rgba(74, 163, 255, 0.08);
+    }
+    .primary {
+      color: var(--qp-primary);
+      background: var(--qp-primary-soft);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="px-3 pt-3 pb-2 border-b border-[var(--qp-border)]">
+      <div class="text-[10px] uppercase tracking-[0.28em] text-[var(--qp-muted)]">QuickPaste</div>
+      <div class="mt-1 text-sm font-semibold">Suggestions</div>
+      <input id="filterInput" class="search mt-2 w-full rounded-xl px-3 py-2 text-sm" placeholder="Filter suggestions..." />
+    </div>
+
+    <div class="px-3 py-2 border-b border-[var(--qp-border)] text-xs text-[var(--qp-muted)]">
+      <span id="queryLabel">Query:</span> <span id="queryValue" class="text-[var(--qp-text)]"></span>
+    </div>
+
+    <div id="list" class="flex-1 overflow-y-auto p-2 flex flex-col gap-2"></div>
+
+    <div class="px-3 py-2 border-t border-[var(--qp-border)] text-[11px] text-[var(--qp-muted)]">
+      Click a suggestion to expand it in the active app.
+    </div>
+  </div>
+
+  <script src="./suggestions.js" type="module"></script>
+</body>
+</html>

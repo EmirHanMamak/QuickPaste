@@ -3,7 +3,7 @@ use crate::data_store::Snippet;
 use chrono::Local;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::PathBuf;
 use std::sync::{OnceLock, RwLock};
@@ -47,6 +47,172 @@ pub struct TextExpansionBundle {
     pub exported_at: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct TextExpansionPack {
+    pub id: String,
+    pub title: String,
+    pub description: String,
+    #[serde(default)]
+    pub recommended: bool,
+    #[serde(default)]
+    pub app_filter: Vec<String>,
+    #[serde(default)]
+    pub items: Vec<TextExpansion>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct TextExpansionCatalog {
+    pub version: u32,
+    pub locale: String,
+    pub recommended_pack_ids: Vec<String>,
+    pub packs: Vec<TextExpansionPack>,
+}
+
+#[derive(Clone, Debug)]
+struct DefaultPackSection {
+    key: &'static str,
+    id: &'static str,
+    title_en: &'static str,
+    title_tr: &'static str,
+    description_en: &'static str,
+    description_tr: &'static str,
+    app_filter: &'static [&'static str],
+}
+
+const UNITY_DEFAULT_APP_FILTER: &[&str] = &["unity.exe", "rider64.exe", "rider.exe", "code.exe"];
+const GENERAL_DEV_APP_FILTER: &[&str] = &["rider64.exe", "rider.exe", "code.exe"];
+
+const DEFAULT_PACK_SECTIONS: &[DefaultPackSection] = &[
+    DefaultPackSection {
+        key: "daily",
+        id: "daily-productivity",
+        title_en: "Daily / General Productivity",
+        title_tr: "Günlük Verimlilik",
+        description_en: "Date, contact, symbols, and lightweight communication snippets.",
+        description_tr: "Tarih, iletişim, semboller ve günlük akışta sık kullanılan yardımcı snippet'ler.",
+        app_filter: &[],
+    },
+    DefaultPackSection {
+        key: "git",
+        id: "git-version-control",
+        title_en: "Git / Version Control",
+        title_tr: "Git / Sürüm Kontrolü",
+        description_en: "Commit, branch, PR, and repository workflow helpers.",
+        description_tr: "Commit, branch, PR ve depo iş akışı yardımcıları.",
+        app_filter: &[],
+    },
+    DefaultPackSection {
+        key: "unity-lifecycle",
+        id: "unity-lifecycle",
+        title_en: "Unity / Lifecycle",
+        title_tr: "Unity / Yaşam Döngüsü",
+        description_en: "MonoBehaviour lifecycle and callback templates.",
+        description_tr: "MonoBehaviour yaşam döngüsü ve callback şablonları.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-debug",
+        id: "unity-debug",
+        title_en: "Unity / Debug & Logging",
+        title_tr: "Unity / Debug ve Loglama",
+        description_en: "Logging, assertions, and quick diagnostics.",
+        description_tr: "Loglama, assertion ve hızlı teşhis snippet'leri.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-attributes",
+        id: "unity-attributes",
+        title_en: "Unity / Attributes & Serialization",
+        title_tr: "Unity / Özellikler ve Serileştirme",
+        description_en: "SerializeField, attributes, and inspector helpers.",
+        description_tr: "SerializeField, attribute'lar ve inspector yardımcıları.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-components",
+        id: "unity-components",
+        title_en: "Unity / Components & GameObject",
+        title_tr: "Unity / Bileşenler ve GameObject",
+        description_en: "Component lookups, instantiation, destruction, and object state.",
+        description_tr: "Component erişimi, instantiate, destroy ve obje durumu.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-coroutine",
+        id: "unity-coroutines",
+        title_en: "Unity / Coroutines & Time",
+        title_tr: "Unity / Coroutine ve Zaman",
+        description_en: "Coroutine patterns, waits, invocation, and timing helpers.",
+        description_tr: "Coroutine kalıpları, beklemeler, invoke ve zaman yardımcıları.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-physics",
+        id: "unity-physics",
+        title_en: "Unity / Physics",
+        title_tr: "Unity / Fizik",
+        description_en: "Raycasts, overlaps, rigidbody utilities, and 2D physics.",
+        description_tr: "Raycast, overlap, rigidbody yardımcıları ve 2D fizik.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-math",
+        id: "unity-math",
+        title_en: "Unity / Math",
+        title_tr: "Unity / Matematik",
+        description_en: "Vector, Mathf, and numerical helpers.",
+        description_tr: "Vector, Mathf ve sayısal yardımcılar.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-transform",
+        id: "unity-transform",
+        title_en: "Unity / Transform & Rotation",
+        title_tr: "Unity / Transform ve Rotasyon",
+        description_en: "Transform access, parenting, and rotation helpers.",
+        description_tr: "Transform erişimi, parenting ve rotasyon yardımcıları.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-input",
+        id: "unity-input",
+        title_en: "Unity / Input",
+        title_tr: "Unity / Input",
+        description_en: "Keyboard, mouse, touch, and Input System helpers.",
+        description_tr: "Klavye, mouse, touch ve Input System yardımcıları.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-ui",
+        id: "unity-ui",
+        title_en: "Unity / UI & TMP",
+        title_tr: "Unity / UI ve TMP",
+        description_en: "TextMeshPro, UI components, and pointer events.",
+        description_tr: "TextMeshPro, UI bileşenleri ve pointer event'leri.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-events",
+        id: "unity-events",
+        title_en: "Unity / Events & Architecture",
+        title_tr: "Unity / Olaylar ve Mimari",
+        description_en: "Events, UnityEvent, state, scene loading, and persistence.",
+        description_tr: "Event'ler, UnityEvent, state, scene yükleme ve kalıcılık.",
+        app_filter: UNITY_DEFAULT_APP_FILTER,
+    },
+    DefaultPackSection {
+        key: "unity-general",
+        id: "unity-general",
+        title_en: "Unity / General C# Utilities",
+        title_tr: "Unity / Genel C# Yardımcıları",
+        description_en: "Using statements and general-purpose C# helpers for Unity work.",
+        description_tr: "Unity çalışmaları için using ve genel amaçlı C# yardımcıları.",
+        app_filter: GENERAL_DEV_APP_FILTER,
+    },
+];
+
 #[derive(Clone, Debug)]
 struct RuntimeState {
     items: Vec<TextExpansion>,
@@ -69,7 +235,16 @@ pub struct ExpansionMatch {
     pub suffix: Option<String>,
 }
 
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextExpansionSuggestion {
+    pub trigger: String,
+    pub description: Option<String>,
+    pub replacement_preview: String,
+}
+
 static RUNTIME: OnceLock<RwLock<RuntimeState>> = OnceLock::new();
+static LEGACY_UNITY_TRIGGER_MAP: OnceLock<HashMap<String, (String, String)>> = OnceLock::new();
 
 fn default_true() -> bool {
     true
@@ -164,15 +339,15 @@ fn set_runtime(items: Vec<TextExpansion>) {
 fn load_text_expansions_from_disk() -> Vec<TextExpansion> {
     let path = get_text_expansions_path();
     if !path.exists() {
-        return default_text_expansions();
+        return Vec::new();
     }
 
     let raw = match fs::read_to_string(&path) {
         Ok(content) => content,
-        Err(_) => return default_text_expansions(),
+        Err(_) => return Vec::new(),
     };
 
-    parse_text_expansion_payload(&raw).unwrap_or_else(|_| default_text_expansions())
+    parse_text_expansion_payload(&raw).unwrap_or_default()
 }
 
 fn save_text_expansions_to_disk(items: &[TextExpansion]) -> Result<(), String> {
@@ -245,6 +420,7 @@ fn normalize_text_expansion(mut item: TextExpansion) -> TextExpansion {
         item.id = Uuid::new_v4().to_string();
     }
     item.trigger = item.trigger.trim().to_string();
+    item.trigger = canonicalize_legacy_text_expansion_trigger(&item.trigger, &item.replacement);
     item.replacement = item.replacement.replace("\r\n", "\n");
     item.description = item
         .description
@@ -266,6 +442,41 @@ fn normalize_text_expansion(mut item: TextExpansion) -> TextExpansion {
     item
 }
 
+fn canonicalize_legacy_text_expansion_trigger(trigger: &str, replacement: &str) -> String {
+    let trimmed = trigger.trim();
+    let normalized_replacement = replacement.replace("\r\n", "\n");
+    let canonical = legacy_unity_trigger_map();
+    if let Some((new_trigger, expected_replacement)) = canonical.get(trimmed) {
+        if normalized_replacement == *expected_replacement {
+            return new_trigger.clone();
+        }
+    }
+
+    trimmed.to_string()
+}
+
+fn legacy_unity_trigger_map() -> &'static HashMap<String, (String, String)> {
+    LEGACY_UNITY_TRIGGER_MAP.get_or_init(|| {
+        let mut map = HashMap::new();
+        let catalog = build_default_catalog("en", None);
+        for pack in catalog.packs {
+            if !pack.id.starts_with("unity") {
+                continue;
+            }
+            for item in pack.items {
+                let raw_trigger = if item.trigger.starts_with('U') {
+                    format!(":{}", item.trigger.trim_start_matches('U'))
+                } else {
+                    item.trigger.clone()
+                };
+                map.entry(raw_trigger)
+                    .or_insert((item.trigger.clone(), item.replacement.clone()));
+            }
+        }
+        map
+    })
+}
+
 fn validate_items(items: &[TextExpansion]) -> Result<(), String> {
     let mut seen = HashSet::new();
     for item in items {
@@ -281,7 +492,19 @@ fn validate_items(items: &[TextExpansion]) -> Result<(), String> {
     Ok(())
 }
 
-fn default_text_expansions() -> Vec<TextExpansion> {
+fn default_catalog_source() -> &'static str {
+    include_str!("../defaults/text_expansion_catalog.txt")
+}
+
+fn default_profile_name() -> &'static str {
+    "Can"
+}
+
+fn core_essentials_items(profile_name: Option<&str>) -> Vec<TextExpansion> {
+    let name = profile_name
+        .map(|value| value.trim())
+        .filter(|value| !value.is_empty())
+        .unwrap_or(default_profile_name());
     let now = now_rfc3339();
     vec![
         seeded(":date", "{{date}}", "Insert today's date", &now),
@@ -289,18 +512,231 @@ fn default_text_expansions() -> Vec<TextExpansion> {
         seeded(":datetime", "{{datetime}}", "Insert current date and time", &now),
         seeded(":uuid", "{{uuid}}", "Insert a new UUID", &now),
         seeded(":clip", "{{clipboard}}", "Insert clipboard text", &now),
-        seeded(":email", "example@email.com", "Insert example email", &now),
-        seeded(":sig", "Saygılarımla,\nCan", "Insert signature block", &now),
-        seeded(
-            ":bug",
-            "Başlık:\nAdımlar:\nBeklenen Sonuç:\nGerçek Sonuç:\nEk Bilgi:",
-            "Bug report template",
-            &now,
-        ),
-        seeded(":todo", "TODO:", "Insert TODO marker", &now),
-        seeded(":fixme", "FIXME:", "Insert FIXME marker", &now),
-        seeded(":log", "Debug.Log(\"\");", "Insert Unity log snippet", &now),
+        TextExpansion {
+            id: Uuid::new_v4().to_string(),
+            trigger: ":sig".to_string(),
+            replacement: format!("Saygılarımla,\n{}", name),
+            description: Some("Insert signature block".to_string()),
+            enabled: true,
+            case_sensitive: false,
+            word_boundary: true,
+            app_filter: Vec::new(),
+            created_at: now.clone(),
+            updated_at: now,
+        },
     ]
+}
+
+fn canonicalize_default_trigger(section_key: &str, trigger: &str) -> String {
+    let trigger = trigger.trim();
+    if section_key.starts_with("unity") {
+        let trimmed = trigger.trim_start_matches(':');
+        if trimmed.starts_with('U') {
+            trimmed.to_string()
+        } else {
+            format!("U{}", trimmed)
+        }
+    } else {
+        trigger.to_string()
+    }
+}
+
+fn section_meta_for_key(key: &str, locale: &str) -> &'static DefaultPackSection {
+    DEFAULT_PACK_SECTIONS
+        .iter()
+        .find(|section| section.key == key)
+        .unwrap_or_else(|| {
+            if locale.starts_with("tr") {
+                &DEFAULT_PACK_SECTIONS[0]
+            } else {
+                &DEFAULT_PACK_SECTIONS[0]
+            }
+        })
+}
+
+fn locale_is_turkish(locale: &str) -> bool {
+    locale.to_lowercase().starts_with("tr")
+}
+
+fn heading_to_section_key(heading: &str) -> Option<&'static str> {
+    let normalized = heading
+        .replace('—', "-")
+        .to_lowercase();
+    if normalized.contains("günlük kullanım") {
+        Some("daily")
+    } else if normalized.contains("git & commit") {
+        Some("git")
+    } else if normalized.contains("unity - lifecycle") {
+        Some("unity-lifecycle")
+    } else if normalized.contains("unity - debug & logging") {
+        Some("unity-debug")
+    } else if normalized.contains("unity - attributes & serialization") {
+        Some("unity-attributes")
+    } else if normalized.contains("unity - component & gameobject") {
+        Some("unity-components")
+    } else if normalized.contains("unity - coroutine & time") {
+        Some("unity-coroutines")
+    } else if normalized.contains("unity - physics") {
+        Some("unity-physics")
+    } else if normalized.contains("unity - math") {
+        Some("unity-math")
+    } else if normalized.contains("unity - transform & rotation") {
+        Some("unity-transform")
+    } else if normalized.contains("unity - input") {
+        Some("unity-input")
+    } else if normalized.contains("unity - ui / tmp") || normalized.contains("unity - ui & tmp") {
+        Some("unity-ui")
+    } else if normalized.contains("unity - events & architecture") {
+        Some("unity-events")
+    } else if normalized.contains("unity - events & mimari") {
+        Some("unity-events")
+    } else if normalized.contains("genel c# & using") || normalized.contains("unity - general c#") {
+        Some("unity-general")
+    } else {
+        None
+    }
+}
+
+fn parse_catalog_line(line: &str) -> Option<(String, String)> {
+    let (left, right) = line.split_once('→')?;
+    let trigger = left.split('`').nth(1)?.trim().to_string();
+    let replacement = right.trim().replace("\\n", "\n");
+    Some((trigger, replacement))
+}
+
+fn build_pack_from_section(section_key: &str, locale: &str, items: Vec<TextExpansion>) -> TextExpansionPack {
+    let meta = section_meta_for_key(section_key, locale);
+    let is_tr = locale_is_turkish(locale);
+    TextExpansionPack {
+        id: meta.id.to_string(),
+        title: if is_tr {
+            meta.title_tr.to_string()
+        } else {
+            meta.title_en.to_string()
+        },
+        description: if is_tr {
+            meta.description_tr.to_string()
+        } else {
+            meta.description_en.to_string()
+        },
+        recommended: true,
+        app_filter: meta.app_filter.iter().map(|value| value.to_string()).collect(),
+        items,
+    }
+}
+
+fn build_default_catalog(locale: &str, profile_name: Option<&str>) -> TextExpansionCatalog {
+    let mut packs = Vec::new();
+    packs.push(TextExpansionPack {
+        id: "core-essentials".to_string(),
+        title: if locale_is_turkish(locale) {
+            "Çekirdek / Temel".to_string()
+        } else {
+            "Core / Essentials".to_string()
+        },
+        description: if locale_is_turkish(locale) {
+            "Tarih, saat, UUID ve pano için her zaman açık temel parçalar.".to_string()
+        } else {
+            "Always-available helpers for date, time, UUID, and clipboard.".to_string()
+        },
+        recommended: true,
+        app_filter: Vec::new(),
+        items: core_essentials_items(profile_name),
+    });
+
+    let mut current_section_key: Option<&'static str> = None;
+    let mut current_items: Vec<TextExpansion> = Vec::new();
+
+    for line in default_catalog_source().lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        if let Some(heading) = trimmed.strip_prefix("## ") {
+            if let Some(section_key) = current_section_key.take() {
+                packs.push(build_pack_from_section(section_key, locale, current_items));
+                current_items = Vec::new();
+            }
+
+            current_section_key = heading_to_section_key(heading);
+            continue;
+        }
+
+        if current_section_key.is_none() {
+            continue;
+        }
+
+        let Some((raw_trigger, raw_replacement)) = parse_catalog_line(trimmed) else {
+            continue;
+        };
+
+        let section_key = current_section_key.unwrap_or("daily");
+        let canonical_trigger = canonicalize_default_trigger(section_key, &raw_trigger);
+        let replacement = if canonical_trigger == ":sig" {
+            let name = profile_name
+                .map(|value| value.trim())
+                .filter(|value| !value.is_empty())
+                .unwrap_or(default_profile_name());
+            format!("Saygılarımla,\n{}", name)
+        } else {
+            raw_replacement
+        };
+        let app_filter = if section_key == "unity-general" {
+            GENERAL_DEV_APP_FILTER.iter().map(|value| value.to_string()).collect()
+        } else if section_key.starts_with("unity") {
+            UNITY_DEFAULT_APP_FILTER.iter().map(|value| value.to_string()).collect()
+        } else {
+            Vec::new()
+        };
+
+        current_items.push(TextExpansion {
+            id: Uuid::new_v4().to_string(),
+            trigger: canonical_trigger,
+            replacement,
+            description: None,
+            enabled: true,
+            case_sensitive: false,
+            word_boundary: true,
+            app_filter,
+            created_at: String::new(),
+            updated_at: String::new(),
+        });
+    }
+
+    if let Some(section_key) = current_section_key.take() {
+        packs.push(build_pack_from_section(section_key, locale, current_items));
+    }
+
+    let recommended_pack_ids = packs.iter().map(|pack| pack.id.clone()).collect();
+    TextExpansionCatalog {
+        version: 1,
+        locale: locale.to_string(),
+        recommended_pack_ids,
+        packs,
+    }
+}
+
+fn default_pack_items_for_ids(pack_ids: &[String], profile_name: Option<&str>) -> Vec<TextExpansion> {
+    let catalog = build_default_catalog("en", profile_name);
+    let mut items = Vec::new();
+    let mut seen = HashSet::new();
+    for pack_id in pack_ids {
+        if let Some(pack) = catalog.packs.iter().find(|entry| entry.id == *pack_id) {
+            for item in &pack.items {
+                let key = normalize_trigger_key(&item.trigger);
+                if seen.insert(key) {
+                    items.push(item.clone());
+                }
+            }
+        }
+    }
+    items
+}
+
+#[allow(dead_code)]
+fn default_text_expansions() -> Vec<TextExpansion> {
+    core_essentials_items(None)
 }
 
 fn seeded(trigger: &str, replacement: &str, description: &str, now: &str) -> TextExpansion {
@@ -446,6 +882,25 @@ fn suffix_for_terminator(terminator: &TerminatorKind) -> Option<String> {
     }
 }
 
+fn normalize_search_key(value: &str) -> String {
+    let trimmed = value.trim().trim_start_matches(':');
+    trimmed.to_lowercase()
+}
+
+fn preview_replacement(value: &str) -> String {
+    let mut preview = value.replace("\r\n", "\n").replace('\n', " ⏎ ");
+    preview = preview.replace('\t', "  ");
+    let preview = preview.trim();
+    let mut out = String::new();
+    for grapheme in preview.graphemes(true).take(70) {
+        out.push_str(grapheme);
+    }
+    if preview.graphemes(true).count() > 70 {
+        out.push('…');
+    }
+    out
+}
+
 fn strip_front_graphemes(text: &mut String, keep_last: usize) {
     let total = text.graphemes(true).count();
     if total <= keep_last {
@@ -487,7 +942,14 @@ pub fn bootstrap_runtime(snippets: &[Snippet]) -> Vec<TextExpansion> {
 }
 
 pub fn build_seeded_text_expansions(snippets: &[Snippet]) -> Vec<TextExpansion> {
-    let merged = merge_items(default_text_expansions(), legacy_from_snippets(snippets));
+    let settings = crate::data_store::load_settings();
+    let selected_ids = settings.text_expansion_default_pack_ids.clone();
+    let mut merged = if selected_ids.is_empty() {
+        Vec::new()
+    } else {
+        default_pack_items_for_ids(&selected_ids, Some(&settings.text_expansion_profile_name))
+    };
+    merged = merge_items(merged, legacy_from_snippets(snippets));
     dedupe_items(merged)
 }
 
@@ -514,8 +976,24 @@ pub fn replace_runtime(items: Vec<TextExpansion>) -> Result<Vec<TextExpansion>, 
 }
 
 pub fn reset_text_expansions() -> Result<Vec<TextExpansion>, String> {
-    let defaults = default_text_expansions();
+    let settings = crate::data_store::load_settings();
+    let defaults = if settings.text_expansion_default_pack_ids.is_empty() {
+        Vec::new()
+    } else {
+        default_pack_items_for_ids(
+            &settings.text_expansion_default_pack_ids,
+            Some(&settings.text_expansion_profile_name),
+        )
+    };
     save_text_expansions(&defaults)
+}
+
+pub fn load_text_expansion_catalog(locale: Option<String>) -> TextExpansionCatalog {
+    let locale = locale
+        .as_deref()
+        .map(|value| value.to_lowercase())
+        .unwrap_or_else(|| "en".to_string());
+    build_default_catalog(&locale, None)
 }
 
 pub fn export_payload(items: &[TextExpansion]) -> Result<String, String> {
@@ -537,6 +1015,16 @@ pub fn current_snapshot() -> Vec<TextExpansion> {
         .read()
         .map(|guard| guard.items.clone())
         .unwrap_or_default()
+}
+
+pub fn resolve_trigger_replacement(trigger: &str) -> Option<String> {
+    let normalized = normalize_trigger_key(trigger);
+    let snapshot = runtime().read().ok()?.clone();
+    let candidate = snapshot
+        .items
+        .iter()
+        .find(|item| normalize_trigger_key(&item.trigger) == normalized)?;
+    Some(resolve_dynamic_variables(&candidate.replacement))
 }
 
 pub fn evaluate_match(buffer: &str, terminator: &TerminatorKind) -> Option<ExpansionMatch> {
@@ -596,6 +1084,54 @@ pub fn evaluate_match(buffer: &str, terminator: &TerminatorKind) -> Option<Expan
     })
 }
 
+pub fn suggest_matches(prefix: &str, limit: usize) -> Vec<TextExpansionSuggestion> {
+    let snapshot = match runtime().read() {
+        Ok(guard) => guard.clone(),
+        Err(_) => return Vec::new(),
+    };
+
+    let active_process = clipboard_manager::get_active_process_name();
+    let query = normalize_search_key(prefix);
+    if query.is_empty() {
+        return Vec::new();
+    }
+
+    let mut ranked: Vec<(usize, usize, TextExpansionSuggestion)> = Vec::new();
+
+    for item in snapshot.items.iter() {
+        if !item.enabled {
+            continue;
+        }
+        if !app_filter_matches(item, &active_process) {
+            continue;
+        }
+
+        let trigger_key = normalize_search_key(&item.trigger);
+        if !trigger_key.starts_with(&query) {
+            continue;
+        }
+
+        let prefix_delta = trigger_key.len().saturating_sub(query.len());
+        let exact_bonus = if trigger_key == query { 0 } else { 1 };
+        ranked.push((
+            exact_bonus,
+            prefix_delta,
+            TextExpansionSuggestion {
+                trigger: item.trigger.clone(),
+                description: item.description.clone(),
+                replacement_preview: preview_replacement(&item.replacement),
+            },
+        ));
+    }
+
+    ranked.sort_by(|a, b| a.0.cmp(&b.0).then(a.1.cmp(&b.1)).then(a.2.trigger.cmp(&b.2.trigger)));
+    ranked
+        .into_iter()
+        .take(limit.max(1))
+        .map(|(_, _, suggestion)| suggestion)
+        .collect()
+}
+
 pub fn append_text(buffer: &mut String, text: &str) {
     buffer.push_str(text);
     strip_front_graphemes(buffer, buffer_limit());
@@ -626,12 +1162,9 @@ mod tests {
     use std::env;
     use std::fs;
 
-    fn temp_dir() -> PathBuf {
-        env::temp_dir().join(format!("quickpaste_text_expansion_test_{}", std::process::id()))
-    }
-
     fn with_temp_dir<T>(f: impl FnOnce() -> T) -> T {
-        let dir = temp_dir();
+        let _guard = crate::test_support::env_lock().lock().unwrap();
+        let dir = crate::test_support::temp_dir("text_expansion");
         env::set_var("QUICKPASTE_APP_DIR", &dir);
         if dir.exists() {
             let _ = fs::remove_dir_all(&dir);
@@ -643,11 +1176,42 @@ mod tests {
     }
 
     #[test]
-    fn defaults_seed_expected_items() {
+    fn defaults_start_empty_without_pack_selection() {
         with_temp_dir(|| {
             let items = bootstrap_runtime(&[]);
-            assert!(items.iter().any(|item| item.trigger == ":date"));
-            assert!(items.iter().any(|item| item.trigger == ":bug"));
+            assert!(items.is_empty());
+        });
+    }
+
+    #[test]
+    fn seeded_pack_selection_uses_unity_u_prefix() {
+        with_temp_dir(|| {
+            let mut settings = crate::data_store::Settings::default();
+            settings.text_expansion_onboarding_completed = true;
+            settings.text_expansion_default_pack_ids = vec!["unity-debug".to_string()];
+            crate::data_store::save_settings(&settings);
+
+            let items = build_seeded_text_expansions(&[]);
+            let triggers: Vec<String> = items.iter().map(|item| item.trigger.clone()).collect();
+            assert!(triggers.iter().any(|trigger| trigger == "Ulog"), "triggers: {:?}", triggers);
+            assert!(triggers.iter().any(|trigger| trigger == "Ulogw"), "triggers: {:?}", triggers);
+            assert!(triggers.iter().any(|trigger| trigger == "Uloge"), "triggers: {:?}", triggers);
+        });
+    }
+
+    #[test]
+    fn prefix_suggestions_match_unity_triggers() {
+        with_temp_dir(|| {
+            let mut settings = crate::data_store::Settings::default();
+            settings.text_expansion_onboarding_completed = true;
+            settings.text_expansion_default_pack_ids = vec!["core-essentials".to_string()];
+            crate::data_store::save_settings(&settings);
+
+            let items = build_seeded_text_expansions(&[]);
+            let _ = replace_runtime(items).unwrap();
+            let suggestions = suggest_matches(":da", 6);
+            let triggers: Vec<String> = suggestions.into_iter().map(|item| item.trigger).collect();
+            assert!(triggers.iter().any(|trigger| trigger == ":date"), "triggers: {:?}", triggers);
         });
     }
 

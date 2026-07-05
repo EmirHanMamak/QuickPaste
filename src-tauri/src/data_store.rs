@@ -55,6 +55,18 @@ pub struct Settings {
     pub theme: String,
     #[serde(default = "default_history_days")]
     pub clipboard_history_duration_days: u32,
+    #[serde(default)]
+    pub text_expansion_onboarding_completed: bool,
+    #[serde(default)]
+    pub text_expansion_default_pack_ids: Vec<String>,
+    #[serde(default)]
+    pub text_expansion_profile_name: String,
+    #[serde(default)]
+    pub text_expansion_profile_role: String,
+    #[serde(default)]
+    pub text_expansion_profile_stack: String,
+    #[serde(default)]
+    pub text_expansion_show_welcome_on_startup: bool,
 }
 
 fn default_theme() -> String {
@@ -75,6 +87,12 @@ impl Default for Settings {
             hotkey: "alt+q".to_string(),
             theme: default_theme(),
             clipboard_history_duration_days: 30,
+            text_expansion_onboarding_completed: false,
+            text_expansion_default_pack_ids: Vec::new(),
+            text_expansion_profile_name: String::new(),
+            text_expansion_profile_role: String::new(),
+            text_expansion_profile_stack: String::new(),
+            text_expansion_show_welcome_on_startup: false,
         }
     }
 }
@@ -318,25 +336,11 @@ mod tests {
     use super::*;
     use std::env;
     use std::fs;
-    use std::sync::{Mutex, OnceLock};
-
-    fn test_lock() -> &'static Mutex<()> {
-        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
-        LOCK.get_or_init(|| Mutex::new(()))
-    }
-
-    fn test_temp_dir(name: &str) -> std::path::PathBuf {
-        let stamp = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_nanos();
-        env::temp_dir().join(format!("quickpaste_test_{}_{}_{}", name, std::process::id(), stamp))
-    }
 
     #[test]
     fn save_and_load_snippets_roundtrip() {
-        let _guard = test_lock().lock().unwrap();
-        let tmp = test_temp_dir("snippets_roundtrip");
+        let _guard = crate::test_support::env_lock().lock().unwrap();
+        let tmp = crate::test_support::temp_dir("snippets_roundtrip");
         env::set_var("QUICKPASTE_APP_DIR", &tmp);
         if tmp.exists() { let _ = fs::remove_dir_all(&tmp); }
 
@@ -369,8 +373,8 @@ mod tests {
 
     #[test]
     fn save_and_load_settings_roundtrip() {
-        let _guard = test_lock().lock().unwrap();
-        let tmp = test_temp_dir("settings_roundtrip");
+        let _guard = crate::test_support::env_lock().lock().unwrap();
+        let tmp = crate::test_support::temp_dir("settings_roundtrip");
         env::set_var("QUICKPASTE_APP_DIR", &tmp);
         if tmp.exists() { let _ = fs::remove_dir_all(&tmp); }
 
@@ -388,8 +392,8 @@ mod tests {
 
     #[test]
     fn load_snippets_recovers_from_backup_after_corruption() {
-        let _guard = test_lock().lock().unwrap();
-        let tmp = test_temp_dir("snippets_recover");
+        let _guard = crate::test_support::env_lock().lock().unwrap();
+        let tmp = crate::test_support::temp_dir("snippets_recover");
         env::set_var("QUICKPASTE_APP_DIR", &tmp);
         if tmp.exists() { let _ = fs::remove_dir_all(&tmp); }
 
@@ -425,8 +429,8 @@ mod tests {
 
     #[test]
     fn load_settings_recovers_from_backup_after_corruption() {
-        let _guard = test_lock().lock().unwrap();
-        let tmp = test_temp_dir("settings_recover");
+        let _guard = crate::test_support::env_lock().lock().unwrap();
+        let tmp = crate::test_support::temp_dir("settings_recover");
         env::set_var("QUICKPASTE_APP_DIR", &tmp);
         if tmp.exists() { let _ = fs::remove_dir_all(&tmp); }
 

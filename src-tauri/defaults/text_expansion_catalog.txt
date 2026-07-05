@@ -1,0 +1,327 @@
+## GÜNDELİK KULLANIM (1–30)
+1. `:date` → {{date}}
+2. `:time` → {{time}}
+3. `:datetime` → {{datetime}}
+4. `:uuid` → {{uuid}}
+5. `:clip` → {{clipboard}}
+6. `:email` → senin@mailin.com
+7. `:tel` → +90 5xx xxx xx xx
+8. `:addr` → tam adres
+9. `:sig` → Saygılarımla,\nCan
+10. `:ty` → Teşekkür ederim, iyi çalışmalar.
+11. `:np` → Rica ederim.
+12. `:brb` → Birazdan dönüyorum.
+13. `:asap` → en kısa sürede
+14. `:fyi` → bilgin olsun
+15. `:re` → Merhaba,\n\n\n\nİyi çalışmalar,\nCan
+16. `:arrow` → →
+17. `:check` → ✓
+18. `:cross` → ✗
+19. `:star` → ★
+20. `:bullet` → •
+21. `:deg` → °
+22. `:shrug` → ¯\_(ツ)_/¯
+23. `:tm` → ™
+24. `:cpr` → ©
+25. `:dots` → …
+26. `:mdash` → —
+27. `:iban` → TR__ ____ ____ ____ ____ ____ __
+28. `:meet` → Toplantı linki:
+29. `:calldone` → Görüşmek üzere, teşekkürler.
+30. `:ok` → Tamamdır, hallediyorum.
+
+## GIT & COMMIT (31–60)
+31. `:feat` → feat:
+32. `:fix` → fix:
+33. `:chore` → chore:
+34. `:refactor` → refactor:
+35. `:docs` → docs:
+36. `:style` → style:
+37. `:perf` → perf:
+38. `:test` → test:
+39. `:build` → build:
+40. `:ci` → ci:
+41. `:revert` → revert:
+42. `:wip` → wip:
+43. `:merge` → Merge branch '' into ''
+44. `:branch` → feature/
+45. `:hotfix` → hotfix/
+46. `:bugfix` → bugfix/
+47. `:release` → release/
+48. `:gadd` → git add .
+49. `:gcom` → git commit -m ""
+50. `:gpush` → git push origin
+51. `:gpull` → git pull origin
+52. `:gstat` → git status
+53. `:gcheck` → git checkout -b
+54. `:gstash` → git stash
+55. `:glog` → git log --oneline --graph
+56. `:greset` → git reset --hard HEAD
+57. `:gignore` → Unity .gitignore satırları (Library/, Temp/, Build/, obj/)
+58. `:commitbody` → başlık + Neden/Ne değişti gövdesi
+59. `:coauth` → Co-authored-by: Ad <mail>
+60. `:prtmpl` → ## Ne / ## Neden / ## Test
+
+## UNITY — LIFECYCLE (61–85)
+61. `:mono` → boş MonoBehaviour sınıfı (using + Start + Update)
+62. `:awake` → private void Awake() { }
+63. `:start` → private void Start() { }
+64. `:update` → private void Update() { }
+65. `:fixed` → private void FixedUpdate() { }
+66. `:late` → private void LateUpdate() { }
+67. `:enable` → private void OnEnable() { }
+68. `:disable` → private void OnDisable() { }
+69. `:ondestroy` → private void OnDestroy() { }
+70. `:validate` → private void OnValidate() { }
+71. `:reset` → private void Reset() { }
+72. `:gizmos` → private void OnDrawGizmos() { }
+73. `:gizmossel` → private void OnDrawGizmosSelected() { }
+74. `:trigenter` → private void OnTriggerEnter(Collider other) { }
+75. `:trigexit` → private void OnTriggerExit(Collider other) { }
+76. `:trigstay` → private void OnTriggerStay(Collider other) { }
+77. `:collenter` → private void OnCollisionEnter(Collision collision) { }
+78. `:collexit` → private void OnCollisionExit(Collision collision) { }
+79. `:trigenter2d` → private void OnTriggerEnter2D(Collider2D other) { }
+80. `:collenter2d` → private void OnCollisionEnter2D(Collision2D collision) { }
+81. `:onmouse` → private void OnMouseDown() { }
+82. `:appquit` → private void OnApplicationQuit() { }
+83. `:apppause` → private void OnApplicationPause(bool paused) { }
+84. `:appfocus` → private void OnApplicationFocus(bool focus) { }
+85. `:becamevisible` → private void OnBecameVisible() { }
+
+## UNITY — DEBUG & LOGGING (86–100)
+86. `:log` → Debug.Log("");
+87. `:logw` → Debug.LogWarning("");
+88. `:loge` → Debug.LogError("");
+89. `:logf` → Debug.LogFormat("{0}", );
+90. `:logv` → Debug.Log($"{nameof()} = {}");
+91. `:logthis` → Debug.Log("", this);
+92. `:logname` → Debug.Log($"[{gameObject.name}] ");
+93. `:logcolor` → Debug.Log("<color=yellow></color>");
+94. `:assert` → Debug.Assert(condition);
+95. `:drawline` → Debug.DrawLine(a, b, Color.red);
+96. `:drawray` → Debug.DrawRay(origin, dir, Color.green);
+97. `:break` → Debug.Break();
+98. `:logenter` → Debug.Log($"Enter {nameof()}");
+99. `:lognull` → if (x == null) Debug.LogError("null: ", this);
+100. `:logexcept` → catch (Exception e) { Debug.LogException(e); }
+
+## UNITY — ATTRIBUTES & SERIALIZATION (101–125)
+101. `:serial` → [SerializeField] private
+102. `:serialf` → [SerializeField] private float
+103. `:seriali` → [SerializeField] private int
+104. `:serialb` → [SerializeField] private bool
+105. `:serials` → [SerializeField] private string
+106. `:serialgo` → [SerializeField] private GameObject
+107. `:serialtr` → [SerializeField] private Transform
+108. `:serialrb` → [SerializeField] private Rigidbody
+109. `:seriallist` → [SerializeField] private List<> items = new();
+110. `:range` → [SerializeField, Range(0f, 1f)] private float
+111. `:headr` → [Header("")]
+112. `:tip` → [Tooltip("")]
+113. `:space` → [Space(10)]
+114. `:hidei` → [HideInInspector]
+115. `:reqcomp` → [RequireComponent(typeof())]
+116. `:disallow` → [DisallowMultipleComponent]
+117. `:execalways` → [ExecuteAlways]
+118. `:textarea` → [TextArea(3, 6)] public string
+119. `:min` → [Min(0)] public float
+120. `:createasset` → [CreateAssetMenu(fileName = "New", menuName = "Game/")]
+121. `:so` → tam ScriptableObject sınıfı
+122. `:contextmenu` → [ContextMenu("")]
+123. `:fieldprop` → [field: SerializeField] public int Value { get; private set; }
+124. `:layermask` → [SerializeField] private LayerMask mask;
+125. `:serialize` → [System.Serializable] public class
+
+## UNITY — COMPONENT & GAMEOBJECT (126–150)
+126. `:getcomp` → GetComponent<>();
+127. `:getcompch` → GetComponentInChildren<>();
+128. `:getcomppar` → GetComponentInParent<>();
+129. `:getcomps` → GetComponentsInChildren<>();
+130. `:tryget` → if (TryGetComponent(out var c)) { }
+131. `:cacherb` → private Rigidbody _rb; + Awake cache
+132. `:cacheanim` → private Animator _anim; + Awake cache
+133. `:find` → GameObject.Find("");
+134. `:findtag` → GameObject.FindWithTag("");
+135. `:findtype` → FindObjectOfType<>();
+136. `:findtypes` → FindObjectsOfType<>();
+137. `:inst` → Instantiate(prefab, transform.position, Quaternion.identity);
+138. `:instpar` → Instantiate(prefab, transform);
+139. `:instrot` → Instantiate(prefab, pos, rot, parent);
+140. `:destroy` → Destroy(gameObject);
+141. `:destroyt` → Destroy(gameObject, 2f);
+142. `:destroyimm` → DestroyImmediate(obj);
+143. `:active` → gameObject.SetActive(true);
+144. `:activeself` → if (gameObject.activeSelf) { }
+145. `:addcomp` → gameObject.AddComponent<>();
+146. `:dontdestroy` → DontDestroyOnLoad(gameObject);
+147. `:comparetag` → if (other.CompareTag("")) { }
+148. `:setlayer` → gameObject.layer = LayerMask.NameToLayer("");
+149. `:name` → gameObject.name
+150. `:tag` → gameObject.tag
+
+## UNITY — COROUTINE & TIME (151–172)
+151. `:coroutine` → IEnumerator Routine() { yield return null; }
+152. `:startco` → StartCoroutine(Routine());
+153. `:startcoref` → _routine = StartCoroutine(Routine());
+154. `:stopco` → StopCoroutine(_routine);
+155. `:stopall` → StopAllCoroutines();
+156. `:waitsec` → yield return new WaitForSeconds(1f);
+157. `:waitreal` → yield return new WaitForSecondsRealtime(1f);
+158. `:waitframe` → yield return null;
+159. `:waitfixed` → yield return new WaitForFixedUpdate();
+160. `:waitend` → yield return new WaitForEndOfFrame();
+161. `:waituntil` → yield return new WaitUntil(() => );
+162. `:waitwhile` → yield return new WaitWhile(() => );
+163. `:cachedwait` → private readonly WaitForSeconds _wait = new(1f);
+164. `:invoke` → Invoke(nameof(Method), 1f);
+165. `:invrep` → InvokeRepeating(nameof(Method), 1f, 1f);
+166. `:cancelinv` → CancelInvoke();
+167. `:dt` → Time.deltaTime
+168. `:fdt` → Time.fixedDeltaTime
+169. `:udt` → Time.unscaledDeltaTime
+170. `:timescale` → Time.timeScale = 0f;
+171. `:timenow` → Time.time
+172. `:framecount` → Time.frameCount
+
+## UNITY — PHYSICS (173–195)
+173. `:raycast` → if (Physics.Raycast(pos, dir, out RaycastHit hit, range)) { }
+174. `:raycastmouse` → kameradan mouse ray + Physics.Raycast
+175. `:raycasthit` → RaycastHit hit;
+176. `:raycastall` → RaycastHit[] hits = Physics.RaycastAll(pos, dir);
+177. `:raycastmask` → Physics.Raycast(pos, dir, out hit, range, layerMask)
+178. `:sphereover` → Collider[] hits = Physics.OverlapSphere(pos, radius);
+179. `:spherecast` → Physics.SphereCast(pos, radius, dir, out hit, range);
+180. `:boxover` → Physics.OverlapBox(center, halfExtents);
+181. `:linecast` → Physics.Linecast(a, b, out hit);
+182. `:checksphere` → if (Physics.CheckSphere(pos, radius, mask)) { }
+183. `:addforce` → _rb.AddForce(dir * force, ForceMode.Impulse);
+184. `:addforcerel` → _rb.AddRelativeForce(Vector3.forward * force);
+185. `:velocity` → _rb.velocity = new Vector3();
+186. `:angularvel` → _rb.angularVelocity = Vector3.zero;
+187. `:moveposition` → _rb.MovePosition(pos);
+188. `:moverotation` → _rb.MoveRotation(rot);
+189. `:isgrounded` → bool grounded = Physics.Raycast(pos, Vector3.down, dist);
+190. `:raycast2d` → RaycastHit2D hit = Physics2D.Raycast(pos, dir);
+191. `:overlapcircle2d` → Physics2D.OverlapCircle(pos, radius);
+192. `:addforce2d` → _rb2d.AddForce(dir * force, ForceMode2D.Impulse);
+193. `:velocity2d` → _rb2d.velocity = new Vector2();
+194. `:gravity` → _rb.useGravity = false;
+195. `:freeze` → _rb.constraints = RigidbodyConstraints.FreezeRotation;
+
+## UNITY — MATH (196–215)
+196. `:v3` → new Vector3(0f, 0f, 0f)
+197. `:v2` → new Vector2(0f, 0f)
+198. `:v3zero` → Vector3.zero
+199. `:v3one` → Vector3.one
+200. `:v3up` → Vector3.up
+201. `:v3fwd` → Vector3.forward
+202. `:lerp` → Vector3.Lerp(a, b, t);
+203. `:mlerp` → Mathf.Lerp(a, b, t);
+204. `:lerpunclamped` → Vector3.LerpUnclamped(a, b, t);
+205. `:movetow` → Vector3.MoveTowards(current, target, step);
+206. `:dist` → Vector3.Distance(a, b);
+207. `:dot` → Vector3.Dot(a, b);
+208. `:normalize` → dir.normalized
+209. `:magnitude` → vec.magnitude
+210. `:sqrmag` → vec.sqrMagnitude
+211. `:clamp` → Mathf.Clamp(value, min, max);
+212. `:clamp01` → Mathf.Clamp01(value);
+213. `:round` → Mathf.RoundToInt(value);
+214. `:pingpong` → Mathf.PingPong(Time.time, 1f);
+215. `:random` → Random.Range(0f, 1f);
+
+## UNITY — TRANSFORM & ROTATION (216–235)
+216. `:lookat` → transform.LookAt(target);
+217. `:translate` → transform.Translate(Vector3.forward * speed * Time.deltaTime);
+218. `:rotate` → transform.Rotate(Vector3.up * speed * Time.deltaTime);
+219. `:slerp` → Quaternion.Slerp(a, b, t);
+220. `:rotslerp` → transform.rotation = Quaternion.Slerp(transform.rotation, target, t);
+221. `:euler` → Quaternion.Euler(0f, 0f, 0f)
+222. `:lookrot` → Quaternion.LookRotation(direction);
+223. `:pos` → transform.position
+224. `:localpos` → transform.localPosition
+225. `:rot` → transform.rotation
+226. `:scale` → transform.localScale
+227. `:setparent` → transform.SetParent(newParent);
+228. `:getchild` → transform.GetChild(0);
+229. `:childcount` → transform.childCount
+230. `:forward` → transform.forward
+231. `:right` → transform.right
+232. `:up` → transform.up
+233. `:foreachchild` → foreach (Transform child in transform) { }
+234. `:detach` → transform.DetachChildren();
+235. `:resetpos` → transform.localPosition = Vector3.zero;
+
+## UNITY — INPUT (236–252)
+236. `:keydown` → if (Input.GetKeyDown(KeyCode.Space)) { }
+237. `:key` → if (Input.GetKey(KeyCode.W)) { }
+238. `:keyup` → if (Input.GetKeyUp(KeyCode.Space)) { }
+239. `:axis` → float h = Input.GetAxis("Horizontal");
+240. `:axisraw` → float h = Input.GetAxisRaw("Horizontal");
+241. `:moveinput` → Vector3 move = new(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+242. `:mousedown` → if (Input.GetMouseButtonDown(0)) { }
+243. `:mouse` → if (Input.GetMouseButton(0)) { }
+244. `:mouseup` → if (Input.GetMouseButtonUp(0)) { }
+245. `:mousepos` → Vector3 m = Input.mousePosition;
+246. `:mousescroll` → Input.mouseScrollDelta.y
+247. `:touch` → if (Input.touchCount > 0) { }
+248. `:touchpos` → Touch touch = Input.GetTouch(0);
+249. `:inputref` → [SerializeField] private InputActionReference action;
+250. `:readv2` → Vector2 input = ctx.ReadValue<Vector2>();
+251. `:callback` → private void OnAction(InputAction.CallbackContext ctx) { }
+252. `:enableaction` → action.action.Enable();
+
+## UNITY — UI / TMP (253–272)
+253. `:tmp` → [SerializeField] private TMP_Text label;
+254. `:tmpin` → [SerializeField] private TMP_InputField input;
+255. `:settext` → label.text = $""; 
+256. `:usingtmp` → using TMPro;
+257. `:btn` → [SerializeField] private Button button;
+258. `:onclick` → button.onClick.AddListener(OnClicked);
+259. `:removeclick` → button.onClick.RemoveListener(OnClicked);
+260. `:slider` → [SerializeField] private Slider slider;
+261. `:sliderev` → slider.onValueChanged.AddListener(OnValueChanged);
+262. `:image` → [SerializeField] private Image image;
+263. `:fill` → image.fillAmount = value;
+264. `:cg` → [SerializeField] private CanvasGroup canvasGroup;
+265. `:cgalpha` → canvasGroup.alpha = value;
+266. `:cgblock` → canvasGroup.blocksRaycasts = false;
+267. `:toggle` → [SerializeField] private Toggle toggle;
+268. `:rect` → [SerializeField] private RectTransform rect;
+269. `:usingui` → using UnityEngine.UI;
+270. `:pointerenter` → public void OnPointerEnter(PointerEventData e) { }
+271. `:pointerclick` → public void OnPointerClick(PointerEventData e) { }
+272. `:scrollrect` → [SerializeField] private ScrollRect scrollRect;
+
+## UNITY — EVENTS & MİMARİ (273–288)
+273. `:action` → public event Action OnChanged;
+274. `:actiont` → public event Action<int> OnValueChanged;
+275. `:invokeev` → OnChanged?.Invoke();
+276. `:unityev` → [SerializeField] private UnityEvent onTriggered;
+277. `:unityevt` → [SerializeField] private UnityEvent<int> onValueChanged;
+278. `:sub` → OnChanged += Handler; (OnEnable)
+279. `:unsub` → OnChanged -= Handler; (OnDisable)
+280. `:singleton` → static Instance + Awake kontrolü
+281. `:statemachine` → enum + SetState switch iskeleti
+282. `:interface` → public interface IName { void Method(); }
+283. `:scenemgr` → SceneManager.LoadScene("");
+284. `:sceneasync` → SceneManager.LoadSceneAsync("");
+285. `:playerprefs` → PlayerPrefs.SetInt("", value);
+286. `:getprefs` → PlayerPrefs.GetInt("", 0);
+287. `:jsonutil` → JsonUtility.ToJson(obj);
+288. `:fromjson` → JsonUtility.FromJson<>(json);
+
+## GENEL C# & USING (289–300)
+289. `:prop` → public int Value { get; private set; }
+290. `:for` → for (int i = 0; i < length; i++) { }
+291. `:foreach` → foreach (var item in collection) { }
+292. `:list` → List<> list = new();
+293. `:dict` → Dictionary<, > dict = new();
+294. `:enum` → public enum Name { A, B, C }
+295. `:tryc` → try/catch bloğu
+296. `:usingsys` → using System;
+297. `:usinggen` → using System.Collections.Generic;
+298. `:usingunity` → using UnityEngine;
+299. `:usinglinq` → using System.Linq;
+300. `:usingco` → using System.Collections;

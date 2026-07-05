@@ -85,6 +85,14 @@
       border-color: var(--qp-border) !important;
       box-shadow: 0 25px 50px var(--qp-shadow);
     }
+    #scrollArea,
+    #settingsScroll,
+    #textExpansionScroll,
+    #dashboardScroll,
+    #textExpansionOnboardingOverlay,
+    #textExpansionOnboardingPacksList {
+      overscroll-behavior: contain;
+    }
     #searchFrame input,
     #searchFrame select,
     #textExpansionScroll input,
@@ -334,6 +342,14 @@
     body.qp-narrow #headerFrame button {
       width: 1.75rem;
       height: 1.75rem;
+    }
+
+    body.welcome-mode #mainContainer {
+      display: none !important;
+    }
+
+    body.welcome-mode {
+      overflow: hidden;
     }
 
     body.qp-compact #hotkeyInputRow,
@@ -1065,15 +1081,15 @@
                     <div>
                       <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-d-primary" style="font-size:18px;">deployed_code</span>
-                        <span id="textExpansionPackagesTitle" class="font-semibold text-sm dark:text-d-text">Unity Game Dev Packs</span>
+                        <span id="textExpansionPackagesTitle" class="font-semibold text-sm dark:text-d-text">Default Packs</span>
                       </div>
                       <p id="textExpansionPackagesDescription" class="text-xs dark:text-d-dim mt-1">
-                        Install daily-use expansions one by one or add a whole package in one step.
+                        Choose packs to install on first launch or add missing packs later.
                       </p>
                     </div>
                     <button id="textExpansionInstallAllPackagesBtn"
                       class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-d-primary text-black hover:opacity-90 transition-opacity whitespace-nowrap">
-                      Install All Packs
+                      Install All
                     </button>
                   </div>
                   <div id="textExpansionPackagesList" class="grid grid-cols-1 gap-2">
@@ -1226,6 +1242,19 @@
                 </div>
                 <label class="qp-switch"><input type="checkbox" id="startupToggle"><span class="qp-slider"></span></label>
               </div>
+              <div class="dark:bg-d-card dark:border-d-border border rounded-xl p-3 flex items-center justify-between gap-3">
+                <div>
+                  <div class="flex items-center gap-2 mb-0.5">
+                    <span>🪟</span>
+                    <span class="font-semibold text-sm dark:text-d-text">Welcome Screen</span>
+                  </div>
+                  <p class="text-xs dark:text-d-dim ml-5">The onboarding screen opens automatically only on first launch. You can reopen it from here anytime.</p>
+                </div>
+                <button id="openWelcomeScreenBtn"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold dark:bg-d-input dark:border-d-border dark:text-d-text border dark:hover:bg-d-hover transition-colors">
+                  Open
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1240,10 +1269,12 @@
               <p id="textExpansionCardDescription" class="text-xs dark:text-d-dim ml-5">
                 Manage system-wide triggers, app filters, and dynamic variables.
               </p>
-              <button id="openTextExpansionBtn"
-                class="mt-3 ml-5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-d-primary text-black hover:opacity-90 transition-opacity">
-                Open Text Expansion
-              </button>
+              <div class="mt-3 ml-5 flex flex-wrap gap-2">
+                <button id="openTextExpansionBtn"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-d-primary text-black hover:opacity-90 transition-opacity">
+                  Open Text Expansion
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1385,6 +1416,104 @@
   </footer>
 
 </div><!-- /#mainContainer -->
+
+<!-- ═══════════════════════════════════════════════════════ TEXT EXPANSION ONBOARDING -->
+<div id="textExpansionOnboardingOverlay" class="hidden fixed inset-0 z-50 bg-[var(--qp-bg)] overflow-y-auto">
+  <div id="textExpansionOnboardingPanel" class="w-full min-h-screen overflow-hidden border dark:border-d-border dark:bg-d-bg flex flex-col">
+    <div class="px-5 py-4 border-b dark:border-d-border flex items-start justify-between gap-4 shrink-0 sticky top-0 z-10 dark:bg-d-bg bg-[var(--qp-bg)]">
+      <div class="min-w-0">
+        <p class="text-[10px] font-bold uppercase tracking-widest dark:text-d-dim mb-1">Setup</p>
+        <h3 id="textExpansionOnboardingTitle" class="text-2xl font-bold dark:text-d-text">Choose your default packs</h3>
+        <p id="textExpansionOnboardingDescription" class="text-sm dark:text-d-dim mt-1 max-w-2xl">
+          Pick the packs you want QuickPaste to install on first launch. You can keep it minimal or install everything at once.
+        </p>
+        <div class="mt-3 rounded-xl border dark:border-d-border dark:bg-d-input/50 px-3 py-2">
+          <div id="textExpansionOnboardingRequiredTitle" class="text-xs font-semibold dark:text-d-text">Pick your defaults first</div>
+          <p id="textExpansionOnboardingRequiredDescription" class="text-[11px] dark:text-d-dim mt-1">
+            QuickPaste will open with a clean setup. Choose the packs you want and continue.
+          </p>
+        </div>
+      </div>
+      <button id="textExpansionOnboardingMaybeLaterBtn" type="button"
+        class="px-3 py-2 rounded-lg text-xs font-semibold dark:bg-d-input dark:border-d-border dark:text-d-text border dark:hover:bg-d-hover transition-colors shrink-0">
+        Maybe Later
+      </button>
+    </div>
+
+    <div class="grid grid-cols-[0.92fr_1.08fr] gap-4 p-5 min-h-0 flex-1">
+      <div class="flex flex-col gap-3 min-h-0 overflow-y-auto pr-1">
+        <div class="dark:bg-d-card dark:border-d-border border rounded-2xl p-4">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-d-primary" style="font-size:18px;">badge</span>
+            <span id="textExpansionOnboardingProfileTitle" class="font-semibold text-sm dark:text-d-text">Your Profile</span>
+          </div>
+          <p id="textExpansionOnboardingProfileDescription" class="text-xs dark:text-d-dim mt-2">
+            We will use these details to personalize the signature and future setup suggestions.
+          </p>
+          <div class="grid grid-cols-1 gap-3 mt-4">
+            <div>
+              <label id="textExpansionProfileNameLabel" class="text-[10px] font-bold uppercase tracking-widest dark:text-d-dim">Name</label>
+              <input id="textExpansionProfileNameInput" type="text" class="mt-1 w-full dark:bg-d-input dark:border-d-border dark:text-d-text border rounded-xl px-3 py-2 text-sm focus:outline-none dark:focus:border-d-primary" placeholder="Can">
+            </div>
+            <div>
+              <label id="textExpansionProfileRoleLabel" class="text-[10px] font-bold uppercase tracking-widest dark:text-d-dim">Role</label>
+              <input id="textExpansionProfileRoleInput" type="text" class="mt-1 w-full dark:bg-d-input dark:border-d-border dark:text-d-text border rounded-xl px-3 py-2 text-sm focus:outline-none dark:focus:border-d-primary" placeholder="Unity Developer">
+            </div>
+            <div>
+              <label id="textExpansionProfileStackLabel" class="text-[10px] font-bold uppercase tracking-widest dark:text-d-dim">Stack</label>
+              <input id="textExpansionProfileStackInput" type="text" class="mt-1 w-full dark:bg-d-input dark:border-d-border dark:text-d-text border rounded-xl px-3 py-2 text-sm focus:outline-none dark:focus:border-d-primary" placeholder="Unity, Rider, VS Code">
+            </div>
+          </div>
+        </div>
+
+        <div class="dark:bg-d-card dark:border-d-border border rounded-2xl p-4 flex flex-col gap-3">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <span id="textExpansionOnboardingSelectedTitle" class="font-semibold text-sm dark:text-d-text">Selected Packs</span>
+              <p id="textExpansionOnboardingSelectedDescription" class="text-xs dark:text-d-dim mt-1">
+                These packs will be installed and remembered as your default selection.
+              </p>
+            </div>
+            <div id="textExpansionOnboardingSelectedSummary" class="text-[10px] uppercase tracking-widest dark:text-d-dim whitespace-nowrap">
+              0 packs · 0 snippets
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button id="textExpansionOnboardingSelectAllBtn" type="button"
+              class="px-3 py-2 rounded-lg text-xs font-semibold bg-d-primary text-black hover:opacity-90 transition-opacity">
+              Select All
+            </button>
+            <button id="textExpansionOnboardingClearSelectionBtn" type="button"
+              class="px-3 py-2 rounded-lg text-xs font-semibold dark:bg-d-input dark:border-d-border dark:text-d-text border dark:hover:bg-d-hover transition-colors">
+              Clear Selection
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dark:bg-d-card dark:border-d-border border rounded-2xl p-4 flex flex-col min-h-0">
+        <div class="flex items-center justify-between gap-3 shrink-0">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest dark:text-d-dim">Available Packs</span>
+            <p class="text-xs dark:text-d-dim mt-1">Core essentials, productivity packs, and Unity Game Dev packs.</p>
+          </div>
+        </div>
+        <div id="textExpansionOnboardingPacksList" class="grid grid-cols-1 gap-2 mt-4 overflow-y-auto pr-1 flex-1">
+          <!-- Rendered by JS -->
+        </div>
+        <div class="flex items-center justify-between gap-3 pt-4 mt-4 border-t dark:border-d-border shrink-0">
+          <div class="text-xs dark:text-d-dim">
+            You can revisit this later from the Defaults button.
+          </div>
+          <button id="textExpansionOnboardingInstallBtn" type="button"
+            class="px-4 py-2 rounded-xl text-sm font-semibold bg-d-primary text-black hover:opacity-90 transition-opacity whitespace-nowrap">
+            Install Selected Defaults
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <!-- ═══════════════════════════════════════════════════════ DIALOG OVERLAY -->

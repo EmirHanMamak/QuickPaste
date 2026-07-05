@@ -1,7 +1,8 @@
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Mutex;
+use std::sync::atomic::{AtomicIsize, AtomicUsize, Ordering};
+use std::sync::{Mutex, OnceLock};
 use std::thread;
 use std::time::Duration;
+use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, WebviewUrl};
 use windows_sys::Win32::UI::Input::KeyboardAndMouse::{
     GetKeyState, GetKeyboardState, MapVirtualKeyW, SendInput, ToUnicode, INPUT, INPUT_KEYBOARD,
     KEYBDINPUT, MAPVK_VK_TO_VSC,
@@ -10,6 +11,7 @@ use windows_sys::Win32::UI::WindowsAndMessaging::{
     CallNextHookEx, GetMessageW, SetWindowsHookExW, UnhookWindowsHookEx, WH_KEYBOARD_LL,
     KBDLLHOOKSTRUCT, MSG, WM_KEYDOWN, WM_SYSKEYDOWN,
 };
+use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{clipboard_monitor, clipboard_manager, text_expansion::{self, TerminatorKind}};
 
@@ -35,6 +37,8 @@ const LLKHF_INJECTED: u32 = 0x10;
 
 static SUSPEND_COUNT: AtomicUsize = AtomicUsize::new(0);
 static TYPED_BUFFER: Mutex<String> = Mutex::new(String::new());
+static APP_HANDLE: OnceLock<AppHandle> = OnceLock::new();
+static LAST_TARGET_HWND: AtomicIsize = AtomicIsize::new(0);
 
 struct SuspendGuard;
 
@@ -44,7 +48,16 @@ impl Drop for SuspendGuard {
     }
 }
 
+#[allow(dead_code)]
 pub fn start_keyboard_hook() {
+    // compatibility shim
+    start_keyboard_hook_with_app(None);
+}
+
+pub fn start_keyboard_hook_with_app(app: Option<AppHandle>) {
+    if let Some(app) = app {
+        let _ = APP_HANDLE.set(app);
+    }
     thread::spawn(|| unsafe {
         let hook = SetWindowsHookExW(WH_KEYBOARD_LL, Some(keyboard_hook_proc), std::ptr::null_mut(), 0);
         if hook.is_null() {
@@ -59,6 +72,145 @@ pub fn start_keyboard_hook() {
 
         UnhookWindowsHookEx(hook);
     });
+}
+
+fn app_handle() -> Option<&'static AppHandle> {
+    APP_HANDLE.get()
+}
+
+fn normalize_query_key(value: &str) -> String {
+    value.trim().trim_start_matches(':').to_lowercase()
+}
+
+fn current_target_window() -> isize {
+    let hwnd = clipboard_manager::get_foreground_window();
+    if hwnd != 0 && !clipboard_manager::is_system_window(hwnd) {
+        LAST_TARGET_HWND.store(hwnd, Ordering::SeqCst);
+    }
+    LAST_TARGET_HWND.load(Ordering::SeqCst)
+}
+
+fn ensure_suggestion_window(app: &AppHandle) -> Result<tauri::WebviewWindow, String> {
+    if let Some(existing) = app.get_webview_window("suggestions") {
+        return Ok(existing);
+    }
+
+    tauri::WebviewWindowBuilder::new(app, "suggestions", WebviewUrl::App("suggestions.html".into()))
+        .title("QuickPaste Suggestions")
+        .inner_size(420.0, 280.0)
+        .min_inner_size(320.0, 220.0)
+        .resizable(false)
+        .decorations(false)
+        .transparent(false)
+        .always_on_top(true)
+        .skip_taskbar(true)
+        .visible(false)
+        .build()
+        .map_err(|e| e.to_string())
+}
+
+fn position_suggestion_window(win: &tauri::WebviewWindow, app: &AppHandle) {
+    if let Ok(cursor) = app.cursor_position() {
+        let x = (cursor.x + 20.0).max(12.0);
+        let y = (cursor.y + 24.0).max(12.0);
+        let _ = win.set_position(PhysicalPosition::new(x, y));
+    }
+}
+
+fn hide_suggestion_window() {
+    if let Some(app) = app_handle() {
+        if let Some(win) = app.get_webview_window("suggestions") {
+            let _ = win.hide();
+        }
+    }
+}
+
+fn show_suggestion_window(query: &str, suggestions: Vec<text_expansion::TextExpansionSuggestion>) {
+    let Some(app) = app_handle() else { return; };
+    if suggestions.is_empty() {
+        hide_suggestion_window();
+        return;
+    }
+
+    let target = current_target_window();
+    if target == 0 {
+        hide_suggestion_window();
+        return;
+    }
+
+    let win = match ensure_suggestion_window(app) {
+        Ok(win) => win,
+        Err(err) => {
+            eprintln!("[QuickPaste] suggestion window failed: {}", err);
+            return;
+        }
+    };
+
+    position_suggestion_window(&win, app);
+    let _ = win.show();
+    let _ = app.emit(
+        "text-expansion-suggestions",
+        serde_json::json!({
+            "query": query,
+            "deleteGraphemes": query.graphemes(true).count(),
+            "targetWindow": target,
+            "suggestions": suggestions,
+        }),
+    );
+}
+
+fn perform_trigger_expansion(trigger: &str, delete_graphemes: usize) -> Result<(), String> {
+    let replacement = text_expansion::resolve_trigger_replacement(trigger)
+        .ok_or_else(|| format!("No expansion found for trigger {}", trigger))?;
+    let target = LAST_TARGET_HWND.load(Ordering::SeqCst);
+    if target == 0 {
+        return Err("No active target window available for expansion".to_string());
+    }
+
+    SUSPEND_COUNT.fetch_add(1, Ordering::SeqCst);
+    thread::spawn(move || {
+        let _guard = SuspendGuard;
+        let _ = clipboard_manager::restore_focus(target);
+        thread::sleep(Duration::from_millis(110));
+        unsafe {
+            send_backspaces(delete_graphemes);
+            thread::sleep(Duration::from_millis(18));
+            if needs_clipboard_fallback(&replacement) {
+                if paste_via_clipboard(&replacement, None).is_err() {
+                    send_unicode_text(&replacement);
+                }
+            } else {
+                send_unicode_text(&replacement);
+            }
+        }
+        hide_suggestion_window();
+        if let Ok(mut buffer) = TYPED_BUFFER.try_lock() {
+            text_expansion::clear_buffer(&mut buffer);
+        }
+    });
+
+    Ok(())
+}
+
+fn refresh_suggestions(buffer: &str) {
+    let query = normalize_query_key(buffer);
+    if query.chars().count() < 2 {
+        hide_suggestion_window();
+        return;
+    }
+
+    let suggestions = text_expansion::suggest_matches(&query, 6);
+    if suggestions.is_empty() {
+        hide_suggestion_window();
+        return;
+    }
+
+    show_suggestion_window(&query, suggestions);
+}
+
+pub fn apply_text_expansion_trigger(trigger: String, delete_graphemes: usize) -> Result<(), String> {
+    hide_suggestion_window();
+    perform_trigger_expansion(&trigger, delete_graphemes)
 }
 
 unsafe extern "system" fn keyboard_hook_proc(code: i32, wparam: usize, lparam: isize) -> isize {
@@ -89,11 +241,16 @@ unsafe extern "system" fn keyboard_hook_proc(code: i32, wparam: usize, lparam: i
 
     if vk == VK_BACK {
         text_expansion::backspace_buffer(&mut buffer);
+        let snapshot = buffer.clone();
+        drop(buffer);
+        refresh_suggestions(&snapshot);
         return CallNextHookEx(std::ptr::null_mut(), code, wparam, lparam);
     }
 
     if ctrl || alt || win {
         text_expansion::clear_buffer(&mut buffer);
+        drop(buffer);
+        hide_suggestion_window();
         return CallNextHookEx(std::ptr::null_mut(), code, wparam, lparam);
     }
 
@@ -109,6 +266,7 @@ unsafe extern "system" fn keyboard_hook_proc(code: i32, wparam: usize, lparam: i
             if let Ok(mut live_buffer) = TYPED_BUFFER.try_lock() {
                 text_expansion::clear_buffer(&mut live_buffer);
             }
+            hide_suggestion_window();
             trigger_expansion(matched);
             return 1;
         }
@@ -120,13 +278,19 @@ unsafe extern "system" fn keyboard_hook_proc(code: i32, wparam: usize, lparam: i
                 text_expansion::clear_buffer(&mut live_buffer);
             }
         }
+        hide_suggestion_window();
         return CallNextHookEx(std::ptr::null_mut(), code, wparam, lparam);
     }
 
     if let Some(text) = text {
         if !text.is_empty() {
             text_expansion::append_text(&mut buffer, &text);
+            let snapshot = buffer.clone();
+            drop(buffer);
+            refresh_suggestions(&snapshot);
+            return CallNextHookEx(std::ptr::null_mut(), code, wparam, lparam);
         }
+        drop(buffer);
         return CallNextHookEx(std::ptr::null_mut(), code, wparam, lparam);
     }
 
@@ -139,6 +303,7 @@ unsafe extern "system" fn keyboard_hook_proc(code: i32, wparam: usize, lparam: i
     } else {
         text_expansion::clear_buffer(&mut buffer);
     }
+    hide_suggestion_window();
 
     CallNextHookEx(std::ptr::null_mut(), code, wparam, lparam)
 }

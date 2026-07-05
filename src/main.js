@@ -104,6 +104,9 @@ function applyPanelHeaderState(panel) {
 }
 
 function returnToMainPage() {
+  if (textExpansionPanel?.closeWelcomeScreen) {
+    textExpansionPanel.closeWelcomeScreen();
+  }
   if (textExpansionPanel?.isOpen()) {
     textExpansionPanel.closePanel();
   }
@@ -118,6 +121,28 @@ function resizeForSidePanel(isOpen) {
   }
   const width = isOpen ? WIN_PANEL_WIDTH : WIN_BASE_WIDTH;
   appWindow.setSize({ type: 'Logical', width, height: WIN_BASE_HEIGHT }).catch(() => {});
+}
+
+async function setWelcomeWindowMode(enabled) {
+  if (appWindow.label !== 'main') {
+    return;
+  }
+
+  try {
+    if (enabled) {
+      if (typeof appWindow.setFullscreen === 'function') {
+        await appWindow.setFullscreen(true);
+      } else if (typeof appWindow.maximize === 'function') {
+        await appWindow.maximize();
+      }
+    } else if (typeof appWindow.setFullscreen === 'function') {
+      await appWindow.setFullscreen(false);
+    } else if (typeof appWindow.unmaximize === 'function') {
+      await appWindow.unmaximize();
+    }
+  } catch {
+    // ignored - window APIs differ across runtime versions
+  }
 }
 
 function applyResponsiveLayoutMode() {
@@ -141,6 +166,7 @@ const hotkeyClearBtn         = document.getElementById('hotkeyClearBtn');
 const opacitySlider          = document.getElementById('opacitySlider');
 const opacityLabel           = document.getElementById('opacityLabel');
 const customAccentInput      = document.getElementById('customAccentInput');
+const openWelcomeScreenBtn   = document.getElementById('openWelcomeScreenBtn');
 
 // Dialog
 const dialogOverlay           = document.getElementById('dialogOverlay');
@@ -201,6 +227,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   appSettings = await invoke('load_settings');
+  window.addEventListener('settings-updated', (event) => {
+    if (event?.detail && typeof event.detail === 'object') {
+      appSettings = event.detail;
+    }
+  });
   setupThemePicker();
   applySettings(appSettings);
 
@@ -210,6 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     appWindow,
     showToast,
     locale: navigator.language,
+    settings: appSettings,
     windowBaseWidth: WIN_BASE_WIDTH,
     windowExpansionWidth: WIN_TEXT_EXPANSION_WIDTH,
     windowHeight: WIN_BASE_HEIGHT,
@@ -235,7 +267,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     storagePathLabel.textContent = storagePath;
   }
 
-  searchInput.focus();
+  if (appSettings?.text_expansion_onboarding_completed) {
+    searchInput.focus();
+  }
 
   // Run main background listeners only in main window
   if (windowLabel === 'main') {
@@ -277,7 +311,6 @@ function applySettings(settings) {
   darkModeToggle.checked         = settings.dark_mode;
   clipboardHistoryToggle.checked = settings.clipboard_history_enabled;
   startupToggle.checked          = settings.startup_with_os || false;
-
   const historyDurationInput = document.getElementById('historyDurationInput');
   historyDurationInput.value = settings.clipboard_history_duration_days !== undefined ? settings.clipboard_history_duration_days : 30;
 
@@ -323,8 +356,10 @@ async function saveCurrentSettings() {
     clipboard_history_enabled: clipboardHistoryToggle.checked,
     clipboard_history_duration_days: parseInt(historyDurationInput.value, 10),
     theme: currentThemeId,
+    text_expansion_show_welcome_on_startup: false,
   };
   await invoke('save_settings', { settings: appSettings });
+  window.dispatchEvent(new CustomEvent('settings-updated', { detail: appSettings }));
   document.body.classList.toggle('dark', appSettings.dark_mode);
   document.documentElement.classList.toggle('dark', appSettings.dark_mode);
   document.body.classList.toggle('light', !appSettings.dark_mode);
@@ -1944,6 +1979,10 @@ settingsBtn.addEventListener('click', () => {
 if (mainPageBtn) {
   mainPageBtn.addEventListener('click', returnToMainPage);
 }
+
+openWelcomeScreenBtn?.addEventListener('click', () => {
+  invoke('open_welcome_window');
+});
 
 
 // ─── Paste Stack (Sıralı Yapıştırma) ─────────────────────────────────────────────

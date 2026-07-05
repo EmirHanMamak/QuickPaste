@@ -6,40 +6,8 @@ const APP_FILTER_PRESETS = {
   chrome: ['chrome.exe'],
 };
 
-const UNITY_PACKAGES = [
-  {
-    id: 'unity-debug',
-    title: 'Unity Debug',
-    description: 'Fast logging and test snippets for the Unity Editor and play mode.',
-    items: [
-      { trigger: ':ulog', replacement: 'Debug.Log("");', description: 'Unity Debug.Log', appFilter: ['unity.exe'], wordBoundary: true },
-      { trigger: ':uwarn', replacement: 'Debug.LogWarning("");', description: 'Unity warning log', appFilter: ['unity.exe'], wordBoundary: true },
-      { trigger: ':uerr', replacement: 'Debug.LogError("");', description: 'Unity error log', appFilter: ['unity.exe'], wordBoundary: true },
-      { trigger: ':todou', replacement: '// TODO: ', description: 'Unity TODO comment', appFilter: ['rider64.exe', 'rider.exe', 'code.exe'], wordBoundary: true },
-    ],
-  },
-  {
-    id: 'unity-bug-report',
-    title: 'Bug Report',
-    description: 'Daily QA and reproduction templates for game-dev bug tracking.',
-    items: [
-      { trigger: ':ubug', replacement: 'Başlık:\nBuild:\nSahne:\nAdımlar:\nBeklenen Sonuç:\nGerçek Sonuç:\nNotlar:', description: 'Unity bug report template', appFilter: [], wordBoundary: true },
-      { trigger: ':utest', replacement: 'Test Ortamı:\nPlatform:\nSonuç:\nNotlar:', description: 'Quick test result template', appFilter: [], wordBoundary: true },
-      { trigger: ':urepro', replacement: 'Repro Rate:\n1. \n2. \n3. ', description: 'Repro steps template', appFilter: [], wordBoundary: true },
-    ],
-  },
-  {
-    id: 'unity-daily',
-    title: 'Daily Workflow',
-    description: 'Standup, commit and task notes used across Unity, Rider and chat tools.',
-    items: [
-      { trigger: ':standup', replacement: 'Dün:\nBugün:\nBloker:', description: 'Daily standup template', appFilter: [], wordBoundary: true },
-      { trigger: ':task', replacement: 'Görev:\nDurum:\nSonraki Adım:', description: 'Task update template', appFilter: [], wordBoundary: true },
-      { trigger: ':commitnote', replacement: 'Özet:\nEtkilenen Alan:\nRisk:', description: 'Commit / changelog note', appFilter: ['rider64.exe', 'rider.exe', 'code.exe'], wordBoundary: true },
-      { trigger: ':scenecheck', replacement: 'Sahne:\nPrefab:\nBağımlılıklar:\nTest Durumu:', description: 'Scene validation checklist', appFilter: ['unity.exe'], wordBoundary: true },
-    ],
-  },
-];
+// Default pack catalog is loaded from the Rust backend so onboarding and manual
+// installs always use the same source of truth.
 
 const APP_FILTER_LABELS = {
   en: {
@@ -70,7 +38,7 @@ const TEXT_EXPANSION_I18N = {
     panelLabel: 'Text Expansion',
     panelTitle: 'System-wide snippets',
     panelDescription: 'Type a trigger in any app, then press Space, Enter, Tab, or punctuation to expand it instantly.',
-    defaults: 'Defaults',
+    defaults: 'Default Packs',
     importLabel: 'Import',
     exportLabel: 'Export',
     back: 'Back',
@@ -99,13 +67,31 @@ const TEXT_EXPANSION_I18N = {
     customExePlaceholder: 'Unity.exe, Rider64.exe, Code.exe',
     dynamicTitle: 'Dynamic Variables',
     dynamicDescription: 'Variables resolve when the expansion fires, not when it is saved.',
-    packagesTitle: 'Unity Game Dev Packs',
-    packagesDescription: 'Install daily-use expansions one by one or add a whole package in one step.',
-    installAllPacks: 'Install All Packs',
+    packagesTitle: 'Default Packs',
+    packagesDescription: 'Choose packs to install on first launch or add missing packs later.',
+    installAllPacks: 'Install All',
     installPack: 'Install Pack',
     installItem: 'Install Item',
     installed: 'Installed',
     skipped: 'Skipped',
+    onboardingTitle: 'Choose your default packs',
+    onboardingDescription: 'Pick the packs you want QuickPaste to install on first launch. You can keep it minimal or install everything at once.',
+    onboardingProfileTitle: 'Your Profile',
+    onboardingProfileDescription: 'We will use these details to personalize the signature and future setup suggestions.',
+    profileNameLabel: 'Name',
+    profileRoleLabel: 'Role',
+    profileStackLabel: 'Stack',
+    profileNamePlaceholder: 'Can',
+    profileRolePlaceholder: 'Unity Developer',
+    profileStackPlaceholder: 'Unity, Rider, VS Code',
+    selectAll: 'Select All',
+    clearSelection: 'Clear Selection',
+    installSelectedDefaults: 'Install Selected Defaults',
+    maybeLater: 'Maybe Later',
+    selectedPacksTitle: 'Selected Packs',
+    selectedPacksDescription: 'These packs will be installed and remembered as your default selection.',
+    onboardingRequiredTitle: 'Pick your defaults first',
+    onboardingRequiredDescription: 'QuickPaste will open with a clean setup. Choose the packs you want and continue.',
     emptyTitle: 'No text expansions found',
     emptyDescription: 'Try a different search or create a new trigger.',
     noDescription: 'No description',
@@ -146,7 +132,7 @@ const TEXT_EXPANSION_I18N = {
     panelLabel: 'Metin Genişletme',
     panelTitle: 'Sistem genelinde snippet\'ler',
     panelDescription: 'Herhangi bir uygulamada tetikleyici yazın; ardından Space, Enter, Tab veya noktalama ile anında genişletin.',
-    defaults: 'Varsayılanlar',
+    defaults: 'Varsayılan Paketler',
     importLabel: 'İçe Aktar',
     exportLabel: 'Dışa Aktar',
     back: 'Geri',
@@ -175,13 +161,31 @@ const TEXT_EXPANSION_I18N = {
     customExePlaceholder: 'Unity.exe, Rider64.exe, Code.exe',
     dynamicTitle: 'Dinamik Değişkenler',
     dynamicDescription: 'Değişkenler kayıt edilirken değil, genişleme çalıştığı anda çözülür.',
-    packagesTitle: 'Unity Game Dev Paketleri',
-    packagesDescription: 'Günlük kullanılan expansion setlerini tek tek ya da tüm paket halinde kurun.',
-    installAllPacks: 'Tüm Paketleri Kur',
+    packagesTitle: 'Varsayılan Paketler',
+    packagesDescription: 'İlk kurulumda kurulacak paketleri seçin veya sonra eksik paketleri ekleyin.',
+    installAllPacks: 'Tümünü Kur',
     installPack: 'Paketi Kur',
     installItem: 'Öğeyi Kur',
     installed: 'Kuruldu',
     skipped: 'Atlandı',
+    onboardingTitle: 'Varsayılan paketleri seçin',
+    onboardingDescription: 'QuickPaste ilk açılışta hangi paketleri kuracağını bilsin. İsterseniz minimal, isterseniz tam kurulum yapabilirsiniz.',
+    onboardingProfileTitle: 'Profil Bilgileri',
+    onboardingProfileDescription: 'Bu bilgiler imza bloğunu ve gelecekteki kurulum önerilerini kişiselleştirmek için kullanılacak.',
+    profileNameLabel: 'Ad',
+    profileRoleLabel: 'Rol',
+    profileStackLabel: 'Stack',
+    profileNamePlaceholder: 'Can',
+    profileRolePlaceholder: 'Unity Developer',
+    profileStackPlaceholder: 'Unity, Rider, VS Code',
+    selectAll: 'Tümünü Seç',
+    clearSelection: 'Seçimi Temizle',
+    installSelectedDefaults: 'Seçili Varsayılanları Kur',
+    maybeLater: 'Sonra',
+    selectedPacksTitle: 'Seçili Paketler',
+    selectedPacksDescription: 'Bu paketler kurulacak ve varsayılan seçiminiz olarak hatırlanacak.',
+    onboardingRequiredTitle: 'Önce varsayılanları seçin',
+    onboardingRequiredDescription: 'QuickPaste temiz bir kurulumla açılacak. Kurmak istediğiniz paketleri seçip devam edin.',
     emptyTitle: 'Metin genişletme bulunamadı',
     emptyDescription: 'Farklı bir arama deneyin veya yeni bir tetikleyici oluşturun.',
     noDescription: 'Açıklama yok',
@@ -306,6 +310,7 @@ export function setupTextExpansionPanel({
   appWindow,
   showToast,
   locale: preferredLocale,
+  settings: initialSettings = {},
   windowBaseWidth = 410,
   windowExpansionWidth = 860,
   windowHeight = 800,
@@ -358,15 +363,43 @@ export function setupTextExpansionPanel({
   const packagesDescription = document.getElementById('textExpansionPackagesDescription');
   const packagesList = document.getElementById('textExpansionPackagesList');
   const installAllPackagesButton = document.getElementById('textExpansionInstallAllPackagesBtn');
+  const onboardingOverlay = document.getElementById('textExpansionOnboardingOverlay');
+  const onboardingPanel = document.getElementById('textExpansionOnboardingPanel');
+  const onboardingTitle = document.getElementById('textExpansionOnboardingTitle');
+  const onboardingDescription = document.getElementById('textExpansionOnboardingDescription');
+  const onboardingRequiredTitle = document.getElementById('textExpansionOnboardingRequiredTitle');
+  const onboardingRequiredDescription = document.getElementById('textExpansionOnboardingRequiredDescription');
+  const onboardingProfileTitle = document.getElementById('textExpansionOnboardingProfileTitle');
+  const onboardingProfileDescription = document.getElementById('textExpansionOnboardingProfileDescription');
+  const onboardingSelectedTitle = document.getElementById('textExpansionOnboardingSelectedTitle');
+  const onboardingSelectedDescription = document.getElementById('textExpansionOnboardingSelectedDescription');
+  const profileNameLabel = document.getElementById('textExpansionProfileNameLabel');
+  const profileRoleLabel = document.getElementById('textExpansionProfileRoleLabel');
+  const profileStackLabel = document.getElementById('textExpansionProfileStackLabel');
+  const profileNameInput = document.getElementById('textExpansionProfileNameInput');
+  const profileRoleInput = document.getElementById('textExpansionProfileRoleInput');
+  const profileStackInput = document.getElementById('textExpansionProfileStackInput');
+  const onboardingPacksList = document.getElementById('textExpansionOnboardingPacksList');
+  const onboardingSelectedSummary = document.getElementById('textExpansionOnboardingSelectedSummary');
+  const onboardingSelectAllButton = document.getElementById('textExpansionOnboardingSelectAllBtn');
+  const onboardingClearSelectionButton = document.getElementById('textExpansionOnboardingClearSelectionBtn');
+  const onboardingInstallButton = document.getElementById('textExpansionOnboardingInstallBtn');
+  const onboardingMaybeLaterButton = document.getElementById('textExpansionOnboardingMaybeLaterBtn');
 
   let expansions = [];
+  let catalog = { version: 1, locale, recommendedPackIds: [], packs: [] };
   let editingId = null;
   let isOpen = false;
+  let welcomeScreenOpen = false;
+  let welcomeScreenFullscreen = false;
   let searchTerm = '';
   let loadPromise = null;
   let isMutating = false;
   let renderQueued = false;
   let suppressRemoteReloadUntil = 0;
+  let selectedPackIds = new Set();
+  let onboardingRequired = !initialSettings?.text_expansion_onboarding_completed;
+  let settingsState = { ...initialSettings };
 
   function setOpenButtonState(open) {
     if (!openButton) {
@@ -378,6 +411,113 @@ export function setupTextExpansionPanel({
     openButton.innerHTML = open
       ? '<span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>'
       : '<span class="material-symbols-outlined" style="font-size:20px;">text_snippet</span>';
+  }
+
+  function normalizePackIds(values) {
+    const seen = new Set();
+    const ids = [];
+    for (const value of values || []) {
+      const id = String(value || '').trim();
+      if (!id) {
+        continue;
+      }
+      if (seen.has(id)) {
+        continue;
+      }
+      seen.add(id);
+      ids.push(id);
+    }
+    return ids;
+  }
+
+  function getProfileValue(inputElement, fallback = '') {
+    return String(inputElement?.value || fallback || '').trim();
+  }
+
+  function getProfileSnapshot() {
+    return {
+      name: getProfileValue(profileNameInput, settingsState.text_expansion_profile_name || 'Can'),
+      role: getProfileValue(profileRoleInput, settingsState.text_expansion_profile_role || ''),
+      stack: getProfileValue(profileStackInput, settingsState.text_expansion_profile_stack || ''),
+    };
+  }
+
+  function applySelectedPackState(nextIds) {
+    selectedPackIds = new Set(normalizePackIds(nextIds));
+    updateOnboardingSummary();
+    renderOnboardingPacks();
+  }
+
+  function collectItemsForPackIds(packIds) {
+    const ids = new Set(normalizePackIds(packIds));
+    const seenTriggers = new Set();
+    return catalog.packs
+      .filter((pack) => ids.has(pack.id))
+      .flatMap((pack) => pack.items || [])
+      .filter((item) => {
+        const key = normalizeTrigger(item.trigger);
+        if (!key || seenTriggers.has(key)) {
+          return false;
+        }
+        seenTriggers.add(key);
+        return true;
+      });
+  }
+
+  function ensureOnboardingSelection() {
+    if (selectedPackIds.size > 0) {
+      return;
+    }
+    const fallbackIds = normalizePackIds(settingsState.text_expansion_default_pack_ids || catalog.recommendedPackIds || []);
+    if (fallbackIds.length > 0) {
+      selectedPackIds = new Set(fallbackIds);
+    }
+  }
+
+  function updateOnboardingSummary() {
+    if (!onboardingSelectedSummary) {
+      return;
+    }
+    const selectedCount = selectedPackIds.size;
+    const selectedItems = collectItemsForPackIds([...selectedPackIds]).length;
+    const packLabel = locale === 'tr' ? 'paket' : (selectedCount === 1 ? 'pack' : 'packs');
+    const snippetLabel = locale === 'tr' ? 'öğe' : (selectedItems === 1 ? 'snippet' : 'snippets');
+    onboardingSelectedSummary.textContent = `${selectedCount} ${packLabel} · ${selectedItems} ${snippetLabel}`;
+  }
+
+  function setWelcomeScreenOpen(open, options = {}) {
+    const fullscreen = !!options.fullscreen;
+    const previousFullscreen = welcomeScreenFullscreen;
+    welcomeScreenOpen = open;
+    welcomeScreenFullscreen = open ? fullscreen : false;
+    onboardingOverlay?.classList.toggle('hidden', !open);
+    if (open) {
+      onboardingOverlay?.classList.remove('pointer-events-none');
+      requestAnimationFrame(() => {
+        profileNameInput?.focus();
+        profileNameInput?.select?.();
+      });
+      window.dispatchEvent(new CustomEvent('text-expansion-welcome-opened', {
+        detail: { fullscreen: welcomeScreenFullscreen },
+      }));
+    } else {
+      onboardingOverlay?.classList.add('pointer-events-none');
+      window.dispatchEvent(new CustomEvent('text-expansion-welcome-closed', {
+        detail: { fullscreen: previousFullscreen },
+      }));
+    }
+  }
+
+  function applySettingsToOnboardingFields() {
+    if (profileNameInput) {
+      profileNameInput.value = settingsState.text_expansion_profile_name || '';
+    }
+    if (profileRoleInput) {
+      profileRoleInput.value = settingsState.text_expansion_profile_role || '';
+    }
+    if (profileStackInput) {
+      profileStackInput.value = settingsState.text_expansion_profile_stack || '';
+    }
   }
 
   if (panel) {
@@ -481,6 +621,60 @@ export function setupTextExpansionPanel({
     if (installAllPackagesButton) {
       installAllPackagesButton.textContent = ui.installAllPacks;
     }
+    if (onboardingTitle) {
+      onboardingTitle.textContent = ui.onboardingTitle;
+    }
+    if (onboardingDescription) {
+      onboardingDescription.textContent = ui.onboardingDescription;
+    }
+    if (onboardingRequiredTitle) {
+      onboardingRequiredTitle.textContent = ui.onboardingRequiredTitle;
+    }
+    if (onboardingRequiredDescription) {
+      onboardingRequiredDescription.textContent = ui.onboardingRequiredDescription;
+    }
+    if (onboardingProfileTitle) {
+      onboardingProfileTitle.textContent = ui.onboardingProfileTitle;
+    }
+    if (onboardingProfileDescription) {
+      onboardingProfileDescription.textContent = ui.onboardingProfileDescription;
+    }
+    if (onboardingSelectedTitle) {
+      onboardingSelectedTitle.textContent = ui.selectedPacksTitle;
+    }
+    if (onboardingSelectedDescription) {
+      onboardingSelectedDescription.textContent = ui.selectedPacksDescription;
+    }
+    if (profileNameLabel) {
+      profileNameLabel.textContent = ui.profileNameLabel;
+    }
+    if (profileRoleLabel) {
+      profileRoleLabel.textContent = ui.profileRoleLabel;
+    }
+    if (profileStackLabel) {
+      profileStackLabel.textContent = ui.profileStackLabel;
+    }
+    if (profileNameInput) {
+      profileNameInput.placeholder = ui.profileNamePlaceholder;
+    }
+    if (profileRoleInput) {
+      profileRoleInput.placeholder = ui.profileRolePlaceholder;
+    }
+    if (profileStackInput) {
+      profileStackInput.placeholder = ui.profileStackPlaceholder;
+    }
+    if (onboardingSelectAllButton) {
+      onboardingSelectAllButton.textContent = ui.selectAll;
+    }
+    if (onboardingClearSelectionButton) {
+      onboardingClearSelectionButton.textContent = ui.clearSelection;
+    }
+    if (onboardingInstallButton) {
+      onboardingInstallButton.textContent = ui.installSelectedDefaults;
+    }
+    if (onboardingMaybeLaterButton) {
+      onboardingMaybeLaterButton.textContent = ui.maybeLater;
+    }
     if (searchInput) {
       searchInput.placeholder = ui.searchPlaceholder;
     }
@@ -560,6 +754,13 @@ export function setupTextExpansionPanel({
       appFilterMode,
       appFilterCustom,
       searchInput,
+      onboardingSelectAllButton,
+      onboardingClearSelectionButton,
+      onboardingInstallButton,
+      onboardingMaybeLaterButton,
+      profileNameInput,
+      profileRoleInput,
+      profileStackInput,
     ].forEach((element) => {
       if (!element) {
         return;
@@ -583,12 +784,17 @@ export function setupTextExpansionPanel({
     });
   }
 
-  function buildPackageItem(baseItem) {
+  function buildPackageItem(baseItem, profileName = '') {
     const now = new Date().toISOString();
+    let replacement = normalizeClipboardFriendlyText(baseItem.replacement);
+    if (String(baseItem.trigger || '').toLowerCase().endsWith('sig')) {
+      const resolvedName = String(profileName || '').trim() || 'Can';
+      replacement = `Saygılarımla,\n${resolvedName}`;
+    }
     return {
       id: crypto.randomUUID(),
       trigger: baseItem.trigger.trim(),
-      replacement: normalizeClipboardFriendlyText(baseItem.replacement),
+      replacement,
       description: baseItem.description || undefined,
       enabled: baseItem.enabled !== false,
       caseSensitive: !!baseItem.caseSensitive,
@@ -599,7 +805,7 @@ export function setupTextExpansionPanel({
     };
   }
 
-  function mergePackageItems(sourceItems) {
+  function mergePackageItems(sourceItems, profileName = '') {
     const next = [...expansions];
     let added = 0;
     let skipped = 0;
@@ -609,7 +815,7 @@ export function setupTextExpansionPanel({
         skipped += 1;
         return;
       }
-      next.push(buildPackageItem(item));
+      next.push(buildPackageItem(item, profileName));
       added += 1;
     });
 
@@ -802,19 +1008,22 @@ export function setupTextExpansionPanel({
 
     packagesList.innerHTML = '';
 
-    UNITY_PACKAGES.forEach((pkg) => {
+    catalog.packs.forEach((pkg) => {
       const installedCount = pkg.items.filter((item) => triggerExists(item.trigger)).length;
       const card = document.createElement('section');
       card.className = 'rounded-xl border dark:border-d-border dark:bg-d-input/60 p-3 flex flex-col gap-3';
 
       const itemsHtml = pkg.items.map((item) => {
         const installed = triggerExists(item.trigger);
+        const descriptionHtml = item.description
+          ? `<span class="text-[10px] dark:text-d-dim">${escapeHtml(item.description)}</span>`
+          : '';
         return `
           <div class="rounded-lg border dark:border-d-border/70 dark:bg-black/10 px-3 py-2 flex items-center justify-between gap-3">
             <div class="min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="px-2 py-0.5 rounded bg-d-primary/15 text-d-primary text-[10px] font-mono font-bold">${escapeHtml(item.trigger)}</span>
-                <span class="text-[10px] dark:text-d-dim">${escapeHtml(item.description || '')}</span>
+                ${descriptionHtml}
               </div>
               <div class="text-[10px] dark:text-d-dim mt-1 truncate">${escapeHtml(normalizeClipboardFriendlyText(item.replacement).replace(/\n/g, ' ⏎ '))}</div>
             </div>
@@ -863,9 +1072,73 @@ export function setupTextExpansionPanel({
     });
   }
 
+  function renderOnboardingPacks() {
+    if (!onboardingPacksList) {
+      return;
+    }
+
+    onboardingPacksList.innerHTML = '';
+    catalog.packs.forEach((pkg) => {
+      const selected = selectedPackIds.has(pkg.id);
+      const installedCount = pkg.items.filter((item) => triggerExists(item.trigger)).length;
+      const totalCount = pkg.items.length;
+      const installedLabel = locale === 'tr' ? 'kuruldu' : 'installed';
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = [
+        'text-left rounded-xl border p-3 transition-colors flex flex-col gap-2',
+        selected ? 'border-d-primary bg-d-primary/10' : 'dark:border-d-border dark:bg-d-input/50 hover:dark:border-d-primary/70',
+      ].join(' ');
+      card.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="font-semibold text-sm dark:text-d-text">${escapeHtml(pkg.title)}</div>
+            <div class="text-[11px] dark:text-d-dim mt-1">${escapeHtml(pkg.description || '')}</div>
+          </div>
+          <label class="qp-switch pointer-events-none scale-90">
+            <input type="checkbox" ${selected ? 'checked' : ''} tabindex="-1">
+            <span class="qp-slider"></span>
+          </label>
+        </div>
+        <div class="flex items-center justify-between text-[10px] uppercase tracking-widest dark:text-d-dim">
+          <span>${escapeHtml(pkg.id)}</span>
+          <span>${installedCount}/${totalCount} ${escapeHtml(installedLabel)}</span>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        const next = new Set(selectedPackIds);
+        if (selected) {
+          next.delete(pkg.id);
+        } else {
+          next.add(pkg.id);
+        }
+        applySelectedPackState(next);
+      });
+      onboardingPacksList.appendChild(card);
+    });
+
+    updateOnboardingSummary();
+  }
+
   async function loadTextExpansions() {
-    const items = await invoke('load_text_expansions');
+    const [items, catalogData] = await Promise.all([
+      invoke('load_text_expansions'),
+      invoke('load_text_expansion_catalog', { locale }),
+    ]);
     expansions = Array.isArray(items) ? items : [];
+    catalog = {
+      version: catalogData?.version || 1,
+      locale: catalogData?.locale || locale,
+      recommendedPackIds: normalizePackIds(catalogData?.recommendedPackIds || catalogData?.recommended_pack_ids || []),
+      packs: Array.isArray(catalogData?.packs) ? catalogData.packs : [],
+    };
+    if (settingsState.text_expansion_default_pack_ids?.length > 0) {
+      selectedPackIds = new Set(normalizePackIds(settingsState.text_expansion_default_pack_ids));
+    } else if (selectedPackIds.size === 0) {
+      selectedPackIds = new Set(normalizePackIds(catalog.recommendedPackIds));
+    }
+    ensureOnboardingSelection();
+    applySelectedPackState(selectedPackIds);
     if (editingId && !expansions.some((item) => item.id === editingId)) {
       clearForm();
     }
@@ -962,17 +1235,62 @@ export function setupTextExpansionPanel({
   }
 
   async function loadDefaults() {
+    if (isOpen) {
+      closePanel();
+    }
+    void invoke('open_welcome_window');
+  }
+
+  async function persistOnboardingSettings(nextPackIds, profileSnapshot) {
+    settingsState = {
+      ...settingsState,
+      text_expansion_onboarding_completed: true,
+      text_expansion_default_pack_ids: normalizePackIds(nextPackIds),
+      text_expansion_profile_name: profileSnapshot.name,
+      text_expansion_profile_role: profileSnapshot.role,
+      text_expansion_profile_stack: profileSnapshot.stack,
+    };
+    await invoke('save_settings', { settings: settingsState });
+    window.dispatchEvent(new CustomEvent('settings-updated', { detail: settingsState }));
+  }
+
+  function openWelcomeScreen(fullscreen = false) {
+    if (isOpen) {
+      closePanel();
+    }
+    void invoke('open_welcome_window', { fullscreen: !!fullscreen });
+  }
+
+  function closeWelcomeScreen() {
+    void invoke('close_welcome_window');
+  }
+
+  async function installSelectedDefaults() {
     if (isMutating) {
       return;
     }
+
+    const profileSnapshot = getProfileSnapshot();
+    const selectedIds = normalizePackIds([...selectedPackIds]);
+    const packItems = collectItemsForPackIds(selectedIds);
+    if (packItems.length === 0) {
+      showToast(ui.onboardingRequiredDescription, 1600, 'info');
+      return;
+    }
+
     try {
       setBusy(true);
       markLocalMutation();
-      const saved = await invoke('reset_text_expansions');
-      expansions = Array.isArray(saved) ? saved : [];
+      const { next, added, skipped } = mergePackageItems(packItems, profileSnapshot.name);
+      const saved = await invoke('save_text_expansions', { items: next });
+      expansions = Array.isArray(saved) ? saved : next;
+      await persistOnboardingSettings(selectedIds, profileSnapshot);
       clearForm();
       scheduleRender();
-      showToast(ui.toastDefaults, 1400, 'success');
+      updateOnboardingSummary();
+      closeWelcomeScreen();
+      onboardingRequired = false;
+      showToast(ui.toastPackInstalled(ui.installSelectedDefaults, added, skipped), 1600, 'success');
     } catch (error) {
       showToast(String(error), 1800, 'error');
     } finally {
@@ -1042,7 +1360,8 @@ export function setupTextExpansionPanel({
       return;
     }
     try {
-      const nextItems = [...expansions, buildPackageItem(item)];
+      const profileName = getProfileSnapshot().name;
+      const nextItems = [...expansions, buildPackageItem(item, profileName)];
       await commitExpansionList(nextItems);
       showToast(ui.toastItemInstalled(item.trigger), 1400, 'success');
     } catch (error) {
@@ -1054,12 +1373,13 @@ export function setupTextExpansionPanel({
     if (isMutating) {
       return;
     }
-    const pkg = UNITY_PACKAGES.find((entry) => entry.id === packageId);
+    const pkg = catalog.packs.find((entry) => entry.id === packageId);
     if (!pkg) {
       return;
     }
     try {
-      const { next, added, skipped } = mergePackageItems(pkg.items);
+      const profileName = getProfileSnapshot().name;
+      const { next, added, skipped } = mergePackageItems(pkg.items, profileName);
       if (added === 0) {
         showToast(ui.toastPackInstalled(pkg.title, added, skipped), 1500, 'info');
         return;
@@ -1076,8 +1396,9 @@ export function setupTextExpansionPanel({
       return;
     }
     try {
-      const allItems = UNITY_PACKAGES.flatMap((pkg) => pkg.items);
-      const { next, added, skipped } = mergePackageItems(allItems);
+      const profileName = getProfileSnapshot().name;
+      const allItems = catalog.packs.flatMap((pkg) => pkg.items);
+      const { next, added, skipped } = mergePackageItems(allItems, profileName);
       if (added === 0) {
         showToast(ui.toastPackInstalled(ui.installAllPacks, added, skipped), 1600, 'info');
         return;
@@ -1091,6 +1412,10 @@ export function setupTextExpansionPanel({
 
   function openPanel() {
     if (isOpen) {
+      return;
+    }
+    if (onboardingRequired) {
+      openWelcomeScreen(true);
       return;
     }
     isOpen = true;
@@ -1116,6 +1441,7 @@ export function setupTextExpansionPanel({
     setOpenButtonState(false);
     panelTrack.classList.remove('text-expansion-open');
     setWindowSize(false);
+    closeWelcomeScreen();
     window.dispatchEvent(new CustomEvent('text-expansion-closed'));
   }
 
@@ -1175,6 +1501,25 @@ export function setupTextExpansionPanel({
     });
     openFromSettingsButton?.addEventListener('click', openPanel);
 
+    onboardingSelectAllButton?.addEventListener('click', () => {
+      applySelectedPackState(catalog.packs.map((pack) => pack.id));
+    });
+    onboardingClearSelectionButton?.addEventListener('click', () => {
+      applySelectedPackState([]);
+    });
+    onboardingInstallButton?.addEventListener('click', installSelectedDefaults);
+    onboardingMaybeLaterButton?.addEventListener('click', closeWelcomeScreen);
+    onboardingOverlay?.addEventListener('click', (event) => {
+      if (event.target === onboardingOverlay) {
+        closeWelcomeScreen();
+      }
+    });
+    [profileNameInput, profileRoleInput, profileStackInput].forEach((input) => {
+      input?.addEventListener('input', () => {
+        updateOnboardingSummary();
+      });
+    });
+
   }
 
   const eventUnsubscribe = [];
@@ -1202,6 +1547,9 @@ export function setupTextExpansionPanel({
       clearForm();
       updateConflictState();
       scheduleRender();
+      if (onboardingRequired) {
+        void invoke('open_welcome_window', { fullscreen: true });
+      }
     })
     .catch((error) => {
       showToast(String(error), 1800, 'error');
@@ -1210,7 +1558,10 @@ export function setupTextExpansionPanel({
   return {
     openPanel,
     closePanel,
+    openWelcomeScreen,
+    closeWelcomeScreen,
     isOpen: () => isOpen,
+    isWelcomeOpen: () => welcomeScreenOpen,
     refresh: async () => {
       await loadTextExpansions();
       refreshConflictWarning();
