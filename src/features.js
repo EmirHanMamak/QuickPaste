@@ -373,133 +373,121 @@ function delay(ms) {
 // ─── Theme System ─────────────────────────────────────────────────────────────
 
 export const THEMES = [
-  {
-    id: 'violet',
-    name: 'QuickPaste',
-    accent: '#7c3aed',
-    emoji: '💜',
-    vars: {
-      '--primary': '#7c3aed',
-      '--primary-container': '#8b5cf6',
-      '--primary-fixed': '#ede9fe',
-      '--card-hover': 'rgba(124,58,237,0.06)',
-    },
-    darkVars: {
-      '--primary': '#a78bfa',
-      '--primary-container': '#7c3aed',
-      '--primary-fixed': '#2e1065',
-      '--card-hover': 'rgba(167,139,250,0.08)',
-    }
-  },
-  {
-    id: 'blue',
-    name: 'Ocean',
-    accent: '#2563eb',
-    emoji: '🔵',
-    vars: {
-      '--primary': '#1d4ed8',
-      '--primary-container': '#2563eb',
-      '--primary-fixed': '#dbeafe',
-      '--card-hover': 'rgba(37,99,235,0.06)',
-    },
-    darkVars: {
-      '--primary': '#60a5fa',
-      '--primary-container': '#1e40af',
-      '--primary-fixed': '#1e3a5f',
-      '--card-hover': 'rgba(96,165,250,0.08)',
-    }
-  },
-  {
-    id: 'green',
-    name: 'Forest',
-    accent: '#16a34a',
-    emoji: '🟢',
-    vars: {
-      '--primary': '#15803d',
-      '--primary-container': '#16a34a',
-      '--primary-fixed': '#dcfce7',
-      '--card-hover': 'rgba(22,163,74,0.06)',
-    },
-    darkVars: {
-      '--primary': '#4ade80',
-      '--primary-container': '#166534',
-      '--primary-fixed': '#14532d',
-      '--card-hover': 'rgba(74,222,128,0.08)',
-    }
-  },
-  {
-    id: 'orange',
-    name: 'Amber',
-    accent: '#d97706',
-    emoji: '🟠',
-    vars: {
-      '--primary': '#b45309',
-      '--primary-container': '#d97706',
-      '--primary-fixed': '#fef3c7',
-      '--card-hover': 'rgba(217,119,6,0.06)',
-    },
-    darkVars: {
-      '--primary': '#fbbf24',
-      '--primary-container': '#92400e',
-      '--primary-fixed': '#451a03',
-      '--card-hover': 'rgba(251,191,36,0.08)',
-    }
-  },
-  {
-    id: 'rose',
-    name: 'Rose',
-    accent: '#e11d48',
-    emoji: '🌹',
-    vars: {
-      '--primary': '#be123c',
-      '--primary-container': '#e11d48',
-      '--primary-fixed': '#ffe4e6',
-      '--card-hover': 'rgba(225,29,72,0.06)',
-    },
-    darkVars: {
-      '--primary': '#fb7185',
-      '--primary-container': '#9f1239',
-      '--primary-fixed': '#4c0519',
-      '--card-hover': 'rgba(251,113,133,0.08)',
-    }
-  },
-  {
-    id: 'slate',
-    name: 'Slate',
-    accent: '#475569',
-    emoji: '⬜',
-    vars: {
-      '--primary': '#334155',
-      '--primary-container': '#475569',
-      '--primary-fixed': '#e2e8f0',
-      '--card-hover': 'rgba(71,85,105,0.06)',
-    },
-    darkVars: {
-      '--primary': '#94a3b8',
-      '--primary-container': '#334155',
-      '--primary-fixed': '#1e293b',
-      '--card-hover': 'rgba(148,163,184,0.08)',
-    }
-  },
-  {
-    id: 'teal',
-    name: 'Teal',
-    accent: '#0d9488',
-    emoji: '🩵',
-    vars: {
-      '--primary': '#0f766e',
-      '--primary-container': '#0d9488',
-      '--primary-fixed': '#ccfbf1',
-      '--card-hover': 'rgba(13,148,136,0.06)',
-    },
-    darkVars: {
-      '--primary': '#2dd4bf',
-      '--primary-container': '#115e59',
-      '--primary-fixed': '#042f2e',
-      '--card-hover': 'rgba(45,212,191,0.08)',
-    }
-  },
+  { id: 'violet', name: 'QuickPaste', accent: '#7c3aed', emoji: '💜' },
+  { id: 'blue', name: 'Ocean', accent: '#2563eb', emoji: '🔵' },
+  { id: 'green', name: 'Forest', accent: '#16a34a', emoji: '🟢' },
+  { id: 'orange', name: 'Amber', accent: '#d97706', emoji: '🟠' },
+  { id: 'rose', name: 'Rose', accent: '#e11d48', emoji: '🌹' },
+  { id: 'slate', name: 'Slate', accent: '#475569', emoji: '⬜' },
+  { id: 'teal', name: 'Teal', accent: '#0d9488', emoji: '🩵' },
 ];
+
+function buildThemeTokens(accentHex, isDark) {
+  const accent = rgbToHex(hexToRgb(accentHex) || { r: 124, g: 58, b: 237 });
+  const base = isDark
+    ? {
+        window: 'rgba(10, 11, 16, 0.92)',
+        bg: '#121212',
+        surface: '#1a1b23',
+        surface2: '#181920',
+        surface3: '#252630',
+        border: '#2f313d',
+        borderStrong: '#4b4d5a',
+        text: '#e2e2e4',
+        muted: '#8b8d98',
+        mutedSoft: '#a1a1aa',
+        outline: '#4b4d5a',
+        outlineVariant: '#3f3f46',
+        shadow: 'rgba(0,0,0,0.5)',
+        overlay: 'rgba(0,0,0,0.55)',
+        accentPrimary: mixHex(accent, '#ffffff', 0.28),
+        accentPrimaryContainer: mixHex(accent, '#000000', 0.32),
+        accentPrimaryFixed: mixHex(accent, '#000000', 0.7),
+        accentPrimaryContrast: '#000000',
+        accentPrimarySoft: rgba(accent, 0.12),
+        accentPrimaryStrong: rgba(accent, 0.2),
+        accentSelected: rgba(accent, 0.16),
+        accentSelectedBorder: rgba(accent, 0.42),
+        accentHover: rgba(accent, 0.1),
+        accentHoverStrong: rgba(accent, 0.16),
+        focusRing: rgba(accent, 0.28),
+        success: '#4ade80',
+        warning: '#fbbf24',
+        danger: '#f87171',
+        info: '#60a5fa',
+      }
+    : {
+        window: 'rgba(255,255,255,0.88)',
+        bg: '#f6f0f8',
+        surface: '#ffffff',
+        surface2: '#f2ecf4',
+        surface3: '#e6e0e9',
+        border: '#cbc4d2',
+        borderStrong: '#aba2b6',
+        text: '#1d1b20',
+        muted: '#605d66',
+        mutedSoft: '#7d7884',
+        outline: '#7d7884',
+        outlineVariant: '#cbc4d2',
+        shadow: 'rgba(29,27,32,0.18)',
+        overlay: 'rgba(29,27,32,0.45)',
+        accentPrimary: mixHex(accent, '#000000', 0.12),
+        accentPrimaryContainer: mixHex(accent, '#ffffff', 0.08),
+        accentPrimaryFixed: mixHex(accent, '#ffffff', 0.82),
+        accentPrimaryContrast: '#ffffff',
+        accentPrimarySoft: rgba(accent, 0.08),
+        accentPrimaryStrong: rgba(accent, 0.14),
+        accentSelected: rgba(accent, 0.12),
+        accentSelectedBorder: rgba(accent, 0.28),
+        accentHover: rgba(accent, 0.06),
+        accentHoverStrong: rgba(accent, 0.1),
+        focusRing: rgba(accent, 0.22),
+        success: '#16a34a',
+        warning: '#d97706',
+        danger: '#dc2626',
+        info: '#2563eb',
+      };
+
+  return {
+    '--qp-window-bg': base.window,
+    '--qp-bg': base.bg,
+    '--qp-surface': base.surface,
+    '--qp-surface-2': base.surface2,
+    '--qp-surface-3': base.surface3,
+    '--qp-input-bg': base.surface2,
+    '--qp-border': base.border,
+    '--qp-border-strong': base.borderStrong,
+    '--qp-text': base.text,
+    '--qp-muted': base.muted,
+    '--qp-muted-soft': base.mutedSoft,
+    '--qp-outline': base.outline,
+    '--qp-outline-variant': base.outlineVariant,
+    '--qp-shadow': base.shadow,
+    '--qp-overlay': base.overlay,
+    '--qp-primary': base.accentPrimary,
+    '--qp-primary-container': base.accentPrimaryContainer,
+    '--qp-primary-fixed': base.accentPrimaryFixed,
+    '--qp-primary-contrast': base.accentPrimaryContrast,
+    '--qp-primary-soft': base.accentPrimarySoft,
+    '--qp-primary-strong': base.accentPrimaryStrong,
+    '--qp-primary-selected': base.accentSelected,
+    '--qp-primary-selected-border': base.accentSelectedBorder,
+    '--qp-hover': base.accentHover,
+    '--qp-hover-strong': base.accentHoverStrong,
+    '--qp-focus-ring': base.focusRing,
+    '--qp-success': base.success,
+    '--qp-warning': base.warning,
+    '--qp-danger': base.danger,
+    '--qp-info': base.info,
+    '--primary': base.accentPrimary,
+    '--primary-container': base.accentPrimaryContainer,
+    '--primary-fixed': base.accentPrimaryFixed,
+    '--primary-contrast': base.accentPrimaryContrast,
+    '--card-hover': base.accentHover,
+    '--outline': base.outline,
+    '--outline-variant': base.outlineVariant,
+  };
+}
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -551,27 +539,7 @@ function rgba(hex, alpha) {
   return `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
 }
 
-function buildCustomTheme(accentHex) {
-  const accent = rgbToHex(hexToRgb(accentHex) || { r: 124, g: 58, b: 237 });
-  return {
-    id: `custom:${accent.toLowerCase()}`,
-    name: 'Custom',
-    accent,
-    emoji: '🎯',
-    vars: {
-      '--primary': mixHex(accent, '#000000', 0.18),
-      '--primary-container': accent,
-      '--primary-fixed': mixHex(accent, '#ffffff', 0.82),
-      '--card-hover': rgba(accent, 0.08),
-    },
-    darkVars: {
-      '--primary': mixHex(accent, '#ffffff', 0.28),
-      '--primary-container': mixHex(accent, '#000000', 0.32),
-      '--primary-fixed': mixHex(accent, '#000000', 0.7),
-      '--card-hover': rgba(accent, 0.12),
-    }
-  };
-}
+const THEME_VARIABLE_KEYS = Object.keys(buildThemeTokens('#7c3aed', true));
 
 export function resolveTheme(themeId) {
   if (String(themeId || '').startsWith('custom:')) {
@@ -583,25 +551,33 @@ export function resolveTheme(themeId) {
 
 export function applyTheme(themeId, isDark) {
   const theme = resolveTheme(themeId);
-  const vars = isDark ? { ...theme.vars, ...theme.darkVars } : theme.vars;
+  const vars = buildThemeTokens(theme.accent, !!isDark);
   const root = document.documentElement;
+  root.style.colorScheme = isDark ? 'dark' : 'light';
   for (const [key, val] of Object.entries(vars)) {
     root.style.setProperty(key, val);
   }
-  // Store on body for reference
+  root.dataset.theme = themeId;
+  root.dataset.themeMode = isDark ? 'dark' : 'light';
   document.body.dataset.theme = themeId;
+  document.body.dataset.themeMode = isDark ? 'dark' : 'light';
 }
 
 export function resetThemeVars() {
   const root = document.documentElement;
-  for (const theme of THEMES) {
-    for (const key of Object.keys(theme.vars)) {
-      root.style.removeProperty(key);
-    }
-  }
-  ['--primary', '--primary-container', '--primary-fixed', '--card-hover'].forEach((key) => {
+  for (const key of THEME_VARIABLE_KEYS) {
     root.style.removeProperty(key);
-  });
+  }
+}
+
+function buildCustomTheme(accentHex) {
+  const accent = rgbToHex(hexToRgb(accentHex) || { r: 124, g: 58, b: 237 });
+  return {
+    id: `custom:${accent.toLowerCase()}`,
+    name: 'Custom',
+    accent,
+    emoji: '🎯',
+  };
 }
 
 // ─── Quick Look Preview ───────────────────────────────────────────────────────

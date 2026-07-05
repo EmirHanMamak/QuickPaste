@@ -34,5 +34,15 @@
   "32": "Vec",
   "33": "AppHandle",
   "34": "Mutex",
-  "35": "applyPanelHeaderState"
+  "35": "applyPanelHeaderState",
+  "36": "Drop",
+  "37": "INPUT",
+  "38": "Option",
+  "39": "PathBuf",
+  "40": "Self",
+  "41": "Settings",
+  "42": "Snippet",
+  "43": "Snippet",
+  "44": "String",
+  "45": "Vec"
 }

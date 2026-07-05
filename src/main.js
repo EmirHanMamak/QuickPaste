@@ -71,7 +71,7 @@ const openLauncherBtn = document.getElementById('openLauncherBtn');
 const openSettingsBtn = document.getElementById('openSettingsBtn');
 const dashboardBtn    = document.getElementById('dashboardBtn');
 
-const DASHBOARD_ICON_HTML = `<div class="flex gap-0.5 h-3.5"><div class="w-1 bg-pink-500 rounded-sm"></div><div class="w-1 bg-green-400 rounded-sm"></div><div class="w-1 bg-blue-400 rounded-sm"></div></div>`;
+const DASHBOARD_ICON_HTML = `<div class="flex gap-0.5 h-3.5"><div class="w-1 rounded-sm" style="background:var(--qp-primary)"></div><div class="w-1 rounded-sm" style="background:var(--qp-success)"></div><div class="w-1 rounded-sm" style="background:var(--qp-info)"></div></div>`;
 const SETTINGS_ICON_HTML = '<span class="material-symbols-outlined" style="font-size:20px;">settings</span>';
 const BACK_ICON_HTML = '<span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>';
 
@@ -283,6 +283,8 @@ function applySettings(settings) {
 
   document.body.classList.toggle('dark', !!settings.dark_mode);
   document.documentElement.classList.toggle('dark', !!settings.dark_mode);
+  document.body.classList.toggle('light', !settings.dark_mode);
+  document.documentElement.classList.toggle('light', !settings.dark_mode);
 
   // Apply theme
   const themeId = settings.theme || 'violet';
@@ -325,6 +327,8 @@ async function saveCurrentSettings() {
   await invoke('save_settings', { settings: appSettings });
   document.body.classList.toggle('dark', appSettings.dark_mode);
   document.documentElement.classList.toggle('dark', appSettings.dark_mode);
+  document.body.classList.toggle('light', !appSettings.dark_mode);
+  document.documentElement.classList.toggle('light', !appSettings.dark_mode);
   applyTheme(currentThemeId, appSettings.dark_mode);
 }
 
@@ -1443,7 +1447,8 @@ function showContextMenu(x, y, index, contentForTransform) {
 
   const menu = document.createElement('div');
   // add `custom-context-menu` so removeContextMenu() can reliably find and remove it
-  menu.className = 'custom-context-menu fixed z-[9500] rounded-xl py-1 min-w-[160px] bg-d-card border border-d-border shadow-[0_8px_32px_rgba(0,0,0,0.5)] animate-[ctxFadeIn_0.1s_ease]';
+  menu.className = 'custom-context-menu fixed z-[9500] rounded-xl py-1 min-w-[160px] bg-d-card border border-d-border animate-[ctxFadeIn_0.1s_ease]';
+  menu.style.boxShadow = '0 8px 32px var(--qp-shadow)';
 
   const menuW = 170, menuH = 160;
   const safeX = Math.min(x, window.innerWidth  - menuW);
@@ -1573,7 +1578,7 @@ function showTransformSubmenu(content, snippetIndex) {
       transformSubmenuEl.appendChild(sep);
     }
     const btn = document.createElement('button');
-    btn.className = 'w-full text-left px-3 py-1.5 text-[11px] font-sans bg-transparent border-none cursor-pointer text-d-text hover:bg-d-hover hover:text-blue-400 transition-colors block';
+    btn.className = 'w-full text-left px-3 py-1.5 text-[11px] font-sans bg-transparent border-none cursor-pointer text-d-text hover:bg-d-hover hover:text-d-primary transition-colors block';
     btn.textContent = transform.label;
     btn.addEventListener('click', async () => {
       const transformed = applyTransform(transform.id, content);
@@ -1729,7 +1734,7 @@ function promptPlaceholders(placeholders, content, callback) {
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.className = 'w-full px-3 py-2 bg-black/20 border border-d-border/50 rounded-lg text-sm text-d-text focus:outline-none focus:border-d-primary transition-colors';
+    input.className = 'w-full px-3 py-2 bg-d-input border border-d-border/50 rounded-lg text-sm text-d-text focus:outline-none focus:border-d-primary transition-colors';
     input.dataset.placeholderName = name;
     input.placeholder = `Enter value for ${name}…`;
 
@@ -1856,7 +1861,7 @@ function updateDashboardStats() {
       item.className = 'flex items-center justify-between py-1.5 border-b border-d-border/50 last:border-0';
       item.innerHTML = `
         <span class="text-[11px] font-medium text-d-text truncate pr-2 flex-1">${escapeHtml(s.title)}</span>
-        <span class="text-[10px] text-d-dim shrink-0 bg-black/20 px-1.5 py-0.5 rounded">${s.use_count} uses</span>
+        <span class="text-[10px] text-d-dim shrink-0 bg-d-input px-1.5 py-0.5 rounded">${s.use_count} uses</span>
       `;
       topList.appendChild(item);
     });

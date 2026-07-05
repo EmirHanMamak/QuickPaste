@@ -20,28 +20,28 @@
     "semantic_hash": ""
   },
   "src-tauri/src/clipboard_manager.rs": {
-    "mtime": 1783177775.399688,
-    "ast_hash": "0a5465d3ec73a7814e74aa573218bc5d",
+    "mtime": 1783245421.6251504,
+    "ast_hash": "15b307d8d22e6057d27458b03a2c9a3c",
     "semantic_hash": ""
   },
   "src-tauri/src/clipboard_monitor.rs": {
-    "mtime": 1783177775.400687,
-    "ast_hash": "ce44f5a449ae4f28059d3b1ffdf829e1",
+    "mtime": 1783243721.1700838,
+    "ast_hash": "5f88b1d46d10b44bb2af6e0cc10f788a",
     "semantic_hash": ""
   },
   "src-tauri/src/data_store.rs": {
-    "mtime": 1783200848.0256703,
-    "ast_hash": "4b8e0bf6ac7385ff98ee0ee0aa5c143a",
+    "mtime": 1783244435.5171418,
+    "ast_hash": "bb18ac6e6b4bc60cacf2a76f8534bca3",
     "semantic_hash": ""
   },
   "src-tauri/src/keyboard_hook.rs": {
-    "mtime": 1783199917.9322903,
-    "ast_hash": "b59ba38c230341dbffaa0495962c4c42",
+    "mtime": 1783245426.1608837,
+    "ast_hash": "746d6e7b4aea42f41a0d615912ededbc",
     "semantic_hash": ""
   },
   "src-tauri/src/lib.rs": {
-    "mtime": 1783198657.510291,
-    "ast_hash": "c2f992f4cc84fffd5cb37b2cd250f2d5",
+    "mtime": 1783245436.2360153,
+    "ast_hash": "cdd794efedb03eb6abf3f7243a887e79",
     "semantic_hash": ""
   },
   "src-tauri/src/main.rs": {
@@ -60,8 +60,8 @@
     "semantic_hash": ""
   },
   "src/main.js": {
-    "mtime": 1783242198.4183686,
-    "ast_hash": "9c2bbf60781c2a40504bbfe4ae1e0d2c",
+    "mtime": 1783244909.6582003,
+    "ast_hash": "285bf82fc63358ab0f2933f42d9c8175",
     "semantic_hash": ""
   },
   "AboutProject.md": {
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "src/index.html": {
-    "mtime": 1783242717.9892125,
-    "ast_hash": "227a88bf8bcf8b36855541ea6d9adf0d",
+    "mtime": 1783244849.409369,
+    "ast_hash": "cae95ad3012fdcf0e1a630a564e6a2b0",
     "semantic_hash": ""
   },
   "src-tauri/icons/128x128.png": {
@@ -175,8 +175,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/text_expansion.rs": {
-    "mtime": 1783196206.611406,
-    "ast_hash": "870d4e9c90d385674e544a1c35d04bbe",
+    "mtime": 1783243602.290796,
+    "ast_hash": "e3b15a9a41d1d8b2171757ba01a3b1f6",
     "semantic_hash": ""
   },
   "src/text-expansion-panel.js": {

@@ -16,6 +16,127 @@
     /* ─── Base ───────────────────────────────────────────────────────────────── */
     html, body { background: transparent; overflow: hidden; }
     body { font-family: 'Inter', sans-serif; font-size: 13px; user-select: none; }
+    :root {
+      color-scheme: dark;
+      --qp-window-bg: rgba(10, 11, 16, 0.92);
+      --qp-bg: #121212;
+      --qp-surface: #1a1b23;
+      --qp-surface-2: #181920;
+      --qp-surface-3: #252630;
+      --qp-input-bg: #181920;
+      --qp-border: #2f313d;
+      --qp-border-strong: #4b4d5a;
+      --qp-text: #e2e2e4;
+      --qp-muted: #8b8d98;
+      --qp-muted-soft: #a1a1aa;
+      --qp-outline: #4b4d5a;
+      --qp-outline-variant: #3f3f46;
+      --qp-shadow: rgba(0,0,0,0.5);
+      --qp-overlay: rgba(0,0,0,0.55);
+      --qp-primary: #a78bfa;
+      --qp-primary-container: #7c3aed;
+      --qp-primary-fixed: #2e1065;
+      --qp-primary-contrast: #000000;
+      --qp-primary-soft: rgba(167,139,250,0.12);
+      --qp-primary-strong: rgba(167,139,250,0.2);
+      --qp-primary-selected: rgba(167,139,250,0.16);
+      --qp-primary-selected-border: rgba(167,139,250,0.42);
+      --qp-hover: rgba(167,139,250,0.10);
+      --qp-hover-strong: rgba(167,139,250,0.16);
+      --qp-focus-ring: rgba(167,139,250,0.28);
+      --qp-success: #4ade80;
+      --qp-warning: #fbbf24;
+      --qp-danger: #f87171;
+      --qp-info: #60a5fa;
+    }
+    body {
+      background: var(--qp-window-bg);
+      color: var(--qp-text);
+    }
+    ::selection {
+      background: var(--qp-primary);
+      color: var(--qp-primary-contrast);
+    }
+    #mainContainer {
+      background: var(--qp-bg);
+      color: var(--qp-text);
+      border: 1px solid var(--qp-border);
+      box-shadow: 0 25px 50px var(--qp-shadow);
+    }
+    #headerFrame, #footerFrame {
+      background: var(--qp-surface);
+      border-color: var(--qp-border) !important;
+    }
+    #bodyArea,
+    #listPanel,
+    #settingsScroll,
+    #textExpansionScroll,
+    #dashboardScroll {
+      background: var(--qp-bg);
+      color: var(--qp-text);
+    }
+    #searchFrame,
+    #bulkActionBar,
+    #paletteContainer,
+    #quickLookOverlay > div,
+    #dialogOverlay > div,
+    #placeholderOverlay > div {
+      background: var(--qp-surface);
+      border-color: var(--qp-border) !important;
+      box-shadow: 0 25px 50px var(--qp-shadow);
+    }
+    #searchFrame input,
+    #searchFrame select,
+    #textExpansionScroll input,
+    #textExpansionScroll select,
+    #textExpansionScroll textarea,
+    #settingsScroll input,
+    #settingsScroll select,
+    #settingsScroll textarea,
+    #dialogOverlay input,
+    #dialogOverlay select,
+    #dialogOverlay textarea,
+    #paletteInput {
+      background: var(--qp-input-bg);
+      color: var(--qp-text);
+      border-color: var(--qp-border);
+    }
+    #settingsScroll .dark\:bg-d-card,
+    #settingsScroll .dark\:bg-d-input,
+    #textExpansionScroll .dark\:bg-d-card,
+    #textExpansionScroll .dark\:bg-d-input,
+    #dashboardScroll .dark\:bg-d-card,
+    #dashboardScroll .dark\:bg-d-input,
+    #dialogOverlay .dark\:bg-d-card,
+    #dialogOverlay .dark\:bg-d-input {
+      background-color: var(--qp-surface) !important;
+      color: var(--qp-text) !important;
+    }
+    .dark [class~="dark:bg-d-bg"], [class~="bg-l-bg"] { background-color: var(--qp-bg) !important; color: var(--qp-text) !important; }
+    .dark [class~="dark:bg-d-card"], [class~="bg-d-card"] { background-color: var(--qp-surface) !important; color: var(--qp-text) !important; }
+    .dark [class~="dark:bg-d-input"], [class~="bg-d-input"], .dark [class~="bg-black/20"] { background-color: var(--qp-input-bg) !important; color: var(--qp-text) !important; }
+    .dark [class~="dark:bg-d-hover"], [class~="bg-d-hover"] { background-color: var(--qp-surface-3) !important; }
+    .dark [class~="dark:bg-d-primary"], [class~="bg-d-primary"] { background-color: var(--qp-primary) !important; color: var(--qp-primary-contrast) !important; }
+    [class~="bg-d-primary/15"] { background-color: var(--qp-primary-selected) !important; }
+    [class~="dark:bg-indigo-900/30"], [class~="bg-indigo-900/30"] { background-color: var(--qp-primary-soft) !important; }
+    .dark [class~="dark:border-d-border"], [class~="border-d-border"] { border-color: var(--qp-border) !important; }
+    .dark [class~="dark:text-d-text"], [class~="text-d-text"], .light [class~="text-l-text"] { color: var(--qp-text) !important; }
+    .dark [class~="dark:text-d-dim"], [class~="text-d-dim"], .light [class~="text-l-dim"] { color: var(--qp-muted) !important; }
+    .dark [class~="dark:text-d-primary"], [class~="text-d-primary"] { color: var(--qp-primary) !important; }
+    .dark [class~="dark:border-d-primary"], [class~="border-d-primary"] { border-color: var(--qp-primary) !important; }
+    .dark [class~="dark:placeholder-d-dim"]::placeholder,
+    .dark [class~="placeholder:dark:text-d-dim/50"]::placeholder,
+    .dark [class~="placeholder:text-d-dim/50"]::placeholder {
+      color: var(--qp-muted-soft) !important;
+    }
+    .dark .dark\:focus\:border-d-primary:focus { border-color: var(--qp-primary) !important; }
+    .dark .dark\:hover\:bg-d-hover:hover { background-color: var(--qp-surface-3) !important; }
+    .dark .hover\:dark\:bg-d-hover:hover { background-color: var(--qp-surface-3) !important; }
+    .dark .hover\:dark\:text-d-text:hover { color: var(--qp-text) !important; }
+    .dark .hover\:dark\:border-d-primary:hover { border-color: var(--qp-primary) !important; }
+    .dark .selection\:bg-d-primary::selection { background: var(--qp-primary) !important; }
+    .dark .selection\:text-black::selection { color: var(--qp-primary-contrast) !important; }
+    .dark .bg-d-primary.text-black { color: var(--qp-primary-contrast) !important; }
 
     /* ─── Material Symbols ──────────────────────────────────────────────────── */
     .material-symbols-outlined {
@@ -29,28 +150,117 @@
     /* ─── Tauri drag region ─────────────────────────────────────────────────── */
     #headerFrame { -webkit-app-region: drag; }
     #headerFrame button, #headerFrame button *, #headerFrame select, #headerFrame select * { -webkit-app-region: no-drag; }
+    #headerFrame > * { min-width: 0; }
+    #appTitle {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #headerFrame > .flex.items-center.gap-2 {
+      flex: 0 1 auto;
+      min-width: 0;
+      justify-content: flex-end;
+    }
+    #headerFrame button {
+      flex: 0 0 auto;
+    }
 
     /* ─── Panel sliding ─────────────────────────────────────────────────────── */
     #panelTrack {
       display: flex;
       flex-direction: row;
-      width: 100%;
+      width: 400%;
       height: 100%;
       transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       will-change: transform;
       backface-visibility: hidden;
+      overflow: hidden;
     }
-    #panelTrack.text-expansion-open { transform: translate3d(-100%, 0, 0); }
-    #panelTrack.dashboard-open { transform: translate3d(-200%, 0, 0); }
-    #panelTrack.settings-open  { transform: translate3d(-300%, 0, 0); }
+    #panelTrack.text-expansion-open { transform: translate3d(-25%, 0, 0); }
+    #panelTrack.dashboard-open { transform: translate3d(-50%, 0, 0); }
+    #panelTrack.settings-open  { transform: translate3d(-75%, 0, 0); }
 
+    #mainContainer, #bodyArea,
     #listPanel, #settingsScroll, #textExpansionScroll, #dashboardScroll {
       width: 100%;
       min-width: 100%;
-      flex-basis: 100%;
-      flex-shrink: 0;
       height: 100%;
       overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    #listPanel, #textExpansionScroll, #dashboardScroll, #settingsScroll {
+      flex: 0 0 25%;
+      width: 25%;
+      min-width: 25%;
+      max-width: 25%;
+    }
+
+    #searchFrame,
+    #bulkActionBar,
+    #scrollArea,
+    #textExpansionScroll > div,
+    #dashboardScroll > div,
+    #settingsScroll > div,
+    #textExpansionHeaderActions,
+    #textExpansionToolbar,
+    #textExpansionMainGrid,
+    #textExpansionFormActions,
+    #textExpansionFieldGrid,
+    #textExpansionToggleGrid,
+    #textExpansionAppFilterGrid,
+    #dashboardStatsGrid,
+    #hotkeyKeysRow,
+    #hotkeyInputRow {
+      min-width: 0;
+    }
+
+    #searchFrame > .flex.gap-2,
+    #searchFrame > .flex.gap-2 > *,
+    #textExpansionToolbar > *,
+    #textExpansionHeaderActions > *,
+    #textExpansionFormActions > *,
+    #textExpansionAppFilterGrid > *,
+    #hotkeyInputRow > * {
+      min-width: 0;
+    }
+
+    #searchFrame > .flex.gap-2 {
+      width: 100%;
+    }
+
+    #categoryFilter,
+    #sortSelect,
+    #clipboardImportBtn,
+    #multiSelectBtn {
+      flex: 0 0 auto;
+      min-width: 0;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    #categoryFilter,
+    #sortSelect {
+      max-width: max-content;
+    }
+
+    #clipboardImportBtn,
+    #multiSelectBtn {
+      font-size: 10px;
+      gap: 0.25rem;
+    }
+
+    #clipboardImportBtn .material-symbols-outlined,
+    #multiSelectBtn .material-symbols-outlined {
+      font-size: 11px !important;
+    }
+
+    #textExpansionScroll > div,
+    #dashboardScroll > div,
+    #settingsScroll > div {
+      width: 100%;
     }
 
     /* ─── Responsive Panel Layout ───────────────────────────────────────────── */
@@ -74,6 +284,8 @@
     body.qp-compact #settingsScroll .flex.items-center.justify-between,
     body.qp-compact #textExpansionScroll .flex.items-start.justify-between.gap-3 {
       flex-wrap: wrap;
+      width: 100%;
+      flex: 1 1 100%;
     }
 
     body.qp-compact #textExpansionScroll .qp-switch,
@@ -87,6 +299,8 @@
     body.qp-narrow #textExpansionFormActions {
       flex-direction: column;
       align-items: stretch;
+      width: 100%;
+      flex: 1 1 100%;
     }
 
     body.qp-narrow #textExpansionHeaderActions > button,
@@ -96,9 +310,78 @@
       width: 100%;
     }
 
+    body.qp-narrow #categoryFilter,
+    body.qp-narrow #sortSelect,
+    body.qp-narrow #clipboardImportBtn,
+    body.qp-narrow #multiSelectBtn {
+      width: 100%;
+      max-width: none;
+    }
+
     body.qp-narrow #headerFrame {
       padding-left: 10px;
       padding-right: 10px;
+    }
+
+    body.qp-narrow #headerFrame {
+      gap: 0.5rem;
+    }
+
+    body.qp-narrow #headerFrame > .flex.items-center.gap-2 {
+      gap: 0.35rem;
+    }
+
+    body.qp-narrow #headerFrame button {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    body.qp-compact #hotkeyInputRow,
+    body.qp-narrow #hotkeyInputRow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      width: 100%;
+      flex: 1 1 100%;
+    }
+
+    body.qp-compact #hotkeyInputRow > *,
+    body.qp-narrow #hotkeyInputRow > * {
+      width: 100%;
+      flex: 1 1 0;
+    }
+
+    body.qp-compact #hotkeyKeysRow,
+    body.qp-narrow #hotkeyKeysRow {
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    body.qp-compact #textExpansionHeaderActions,
+    body.qp-narrow #textExpansionHeaderActions,
+    body.qp-compact #textExpansionFormActions,
+    body.qp-narrow #textExpansionFormActions,
+    body.qp-compact #textExpansionToolbar,
+    body.qp-narrow #textExpansionToolbar {
+      align-items: stretch;
+    }
+
+    body.qp-compact #textExpansionHeaderActions > button,
+    body.qp-narrow #textExpansionHeaderActions > button,
+    body.qp-compact #textExpansionFormActions > button,
+    body.qp-narrow #textExpansionFormActions > button,
+    body.qp-compact #textExpansionToolbar > *,
+    body.qp-narrow #textExpansionToolbar > * {
+      width: 100%;
+      min-width: 0;
+    }
+
+    body.qp-compact #settingsScroll .flex.items-center.justify-between,
+    body.qp-narrow #settingsScroll .flex.items-center.justify-between,
+    body.qp-compact #textExpansionScroll .flex.items-start.justify-between.gap-3,
+    body.qp-narrow #textExpansionScroll .flex.items-start.justify-between.gap-3 {
+      align-items: stretch;
+      flex: 1 1 100%;
     }
 
     /* ─── Main layout ───────────────────────────────────────────────────────── */
@@ -127,7 +410,7 @@
       border-radius: 0;
       border: none;
       box-shadow: none;
-      filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(0 25px 50px var(--qp-shadow));
     }
     body.launcher-mode #headerFrame {
       width: 680px;
@@ -168,16 +451,16 @@
     body.launcher-mode.dark #headerFrame,
     body.launcher-mode.dark #bodyArea,
     body.launcher-mode.dark #footerFrame {
-      background: rgba(26, 27, 35, 0.85) !important;
-      border-color: rgba(47, 49, 61, 0.85) !important;
+      background: color-mix(in srgb, var(--qp-surface) 85%, transparent) !important;
+      border-color: color-mix(in srgb, var(--qp-border) 85%, transparent) !important;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
     body.launcher-mode.light #headerFrame,
     body.launcher-mode.light #bodyArea,
     body.launcher-mode.light #footerFrame {
-      background: rgba(242, 236, 244, 0.85) !important;
-      border-color: rgba(203, 196, 210, 0.85) !important;
+      background: color-mix(in srgb, var(--qp-surface) 85%, transparent) !important;
+      border-color: color-mix(in srgb, var(--qp-border) 85%, transparent) !important;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
@@ -201,25 +484,25 @@
     /* ─── Scrollbar ─────────────────────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+    ::-webkit-scrollbar-thumb { background: var(--qp-surface-3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--qp-primary); }
 
     /* ─── Toggle switch ─────────────────────────────────────────────────────── */
     .qp-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
     .qp-switch input { opacity: 0; width: 0; height: 0; }
     .qp-slider {
-      position: absolute; inset: 0; background: #3f3f46;
+      position: absolute; inset: 0; background: var(--qp-surface-3);
       border-radius: 24px; cursor: pointer;
       transition: background 0.2s;
     }
     .qp-slider::before {
       content: ''; position: absolute;
       width: 18px; height: 18px; border-radius: 50%;
-      left: 3px; top: 3px; background: #a1a1aa;
+      left: 3px; top: 3px; background: var(--qp-muted-soft);
       transition: transform 0.2s, background 0.2s;
     }
-    input:checked + .qp-slider { background: #00d859; }
-    input:checked + .qp-slider::before { transform: translateX(20px); background: #000; }
+    input:checked + .qp-slider { background: var(--qp-success); }
+    input:checked + .qp-slider::before { transform: translateX(20px); background: var(--qp-primary-contrast); }
 
     /* ─── Kbd chips ─────────────────────────────────────────────────────────── */
     .kbd-chip {
@@ -229,8 +512,13 @@
       font-size: 12px; font-weight: 700;
       border: 1px solid;
     }
-    .dark .kbd-chip { background: #252630; border-color: #4b4d5a; color: #e2e2e4; }
-    .light .kbd-chip { background: #e6e0e9; border-color: #cbc4d2; color: #1d1b20; }
+    .dark .kbd-chip,
+    .light .kbd-chip {
+      background: var(--qp-surface-3);
+      border-color: var(--qp-border-strong);
+      color: var(--qp-text);
+    }
+    .light .kbd-chip { background: var(--qp-surface-2); }
 
     /* ─── Shortcut badges on cards ──────────────────────────────────────────── */
     .shortcut-badge {
@@ -244,7 +532,7 @@
     #dialogOverlay {
       position: fixed; inset: 0; z-index: 1000;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+      background: var(--qp-overlay); backdrop-filter: blur(4px);
     }
     #dialogOverlay.hidden { display: none; }
 
@@ -252,14 +540,14 @@
     #placeholderOverlay {
       position: fixed; inset: 0; z-index: 1100;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+      background: var(--qp-overlay); backdrop-filter: blur(4px);
     }
     #placeholderOverlay.hidden { display: none; }
 
     /* ─── Command palette overlay ────────────────────────────────────────────── */
     #commandPaletteOverlay {
       position: fixed; inset: 0; z-index: 9000;
-      background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+      background: var(--qp-overlay); backdrop-filter: blur(6px);
       display: flex; align-items: flex-start; justify-content: center;
       padding-top: 60px;
     }
@@ -268,10 +556,18 @@
     /* ─── Quick look overlay ─────────────────────────────────────────────────── */
     #quickLookOverlay {
       position: fixed; inset: 0; z-index: 8000;
-      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      background: var(--qp-overlay); backdrop-filter: blur(4px);
       display: flex; align-items: center; justify-content: center;
     }
     #quickLookOverlay.hidden { display: none; }
+    #quickLookOverlay button {
+      background: color-mix(in srgb, var(--qp-surface-3) 80%, transparent);
+      color: var(--qp-muted);
+    }
+    #quickLookOverlay button:hover {
+      background: var(--qp-surface-3);
+      color: var(--qp-text);
+    }
 
     /* ─── Transform submenu ──────────────────────────────────────────────────── */
     #transformSubmenu {
@@ -279,7 +575,7 @@
       border-radius: 10px; min-width: 180px; padding: 4px 0;
       animation: ctxFadeIn 0.1s ease;
     }
-    .dark #transformSubmenu { background: #1a1b23; border: 1px solid #2f313d; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .dark #transformSubmenu { background: var(--qp-surface); border: 1px solid var(--qp-border); box-shadow: 0 8px 32px var(--qp-shadow); }
     #transformSubmenu.hidden { display: none; }
 
     .transform-item {
@@ -288,9 +584,9 @@
       background: transparent; border: none; cursor: pointer;
       transition: background 0.1s;
     }
-    .dark .transform-item { color: #e2e2e4; }
-    .transform-item:hover { background: #252630; color: #60a5fa; }
-    .transform-separator { height: 1px; background: #2f313d; margin: 3px 0; }
+    .dark .transform-item { color: var(--qp-text); }
+    .transform-item:hover { background: var(--qp-surface-3); color: var(--qp-primary); }
+    .transform-separator { height: 1px; background: var(--qp-border); margin: 3px 0; }
 
     /* ─── Custom context menu ────────────────────────────────────────────────── */
     .custom-context-menu {
@@ -298,7 +594,7 @@
       border-radius: 10px; padding: 4px 0; min-width: 150px;
       animation: ctxFadeIn 0.1s ease;
     }
-    .dark .custom-context-menu { background: #1a1b23; border: 1px solid #2f313d; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .dark .custom-context-menu { background: var(--qp-surface); border: 1px solid var(--qp-border); box-shadow: 0 8px 32px var(--qp-shadow); }
     @keyframes ctxFadeIn { from { opacity: 0; transform: scale(0.95) translateY(-4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
     .context-item {
@@ -307,9 +603,9 @@
       background: transparent; border: none; cursor: pointer;
       transition: background 0.1s;
     }
-    .dark .context-item { color: #e2e2e4; }
-    .context-item:hover { background: #252630; }
-    .context-item.danger { color: #f87171; }
+    .dark .context-item { color: var(--qp-text); }
+    .context-item:hover { background: var(--qp-surface-3); }
+    .context-item.danger { color: var(--qp-danger); }
     .context-item.has-submenu::after { content: ' ›'; float: right; opacity: 0.5; }
 
     /* ─── Toast ──────────────────────────────────────────────────────────────── */
@@ -323,15 +619,15 @@
       color: #fff; pointer-events: none; white-space: nowrap;
       animation: toastIn 0.2s ease;
     }
-    .toast.success { background: #16a34a; }
-    .toast.error   { background: #dc2626; }
-    .toast.info    { background: #2563eb; }
+    .toast.success { background: var(--qp-success); }
+    .toast.error   { background: var(--qp-danger); }
+    .toast.info    { background: var(--qp-info); }
     @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ─── Activity bars ──────────────────────────────────────────────────────── */
     .db-bar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .db-bar-bg { flex: 1; width: 100%; display: flex; align-items: flex-end; }
-    .db-bar-fill { width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; transition: height 0.4s ease; }
+    .db-bar-fill { width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; transition: height 0.4s ease; background: var(--qp-primary); }
 
     /* ─── Breakdown bar ──────────────────────────────────────────────────────── */
     .breakdown-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
@@ -344,7 +640,7 @@
     .dark input[type="range"].qp-range { background: #3f3f46; }
     input[type="range"].qp-range::-webkit-slider-thumb {
       -webkit-appearance: none; width: 14px; height: 14px;
-      border-radius: 50%; background: #60a5fa; cursor: pointer;
+      border-radius: 50%; background: var(--qp-primary); cursor: pointer;
     }
 
     /* ─── Drag handle ────────────────────────────────────────────────────────── */
@@ -359,34 +655,34 @@
     .pinned-card .pin-indicator { display: inline; }
 
     /* ─── Multi-select card ──────────────────────────────────────────────────── */
-    .multi-selected { outline: 2px solid #60a5fa; outline-offset: -2px; }
+    .multi-selected { outline: 2px solid var(--qp-primary); outline-offset: -2px; }
 
     /* ─── Toggle-active header/toolbar buttons (Pin / Multi-select) ─────────────
        JS toggles the `active` class on these buttons but no rule previously
        existed, so pinned/multi-select state was visually indistinguishable. */
     #pinWindowBtn { opacity: 0.5; }
-    #pinWindowBtn.active { opacity: 1; box-shadow: 0 0 0 2px rgba(96,165,250,0.35); }
-    #multiSelectBtn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
-    #multiSelectBtn.active:hover { background: #1d4ed8; }
+    #pinWindowBtn.active { opacity: 1; box-shadow: 0 0 0 2px var(--qp-focus-ring); }
+    #multiSelectBtn.active { background: var(--qp-primary); border-color: var(--qp-primary); color: var(--qp-primary-contrast); }
+    #multiSelectBtn.active:hover { background: var(--qp-primary-container); }
 
     /* ─── Smart type badges ──────────────────────────────────────────────────── */
     .smart-type-badge {
       font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 4px;
-      background: rgba(96,165,250,0.15); color: #60a5fa;
+      background: var(--qp-primary-soft); color: var(--qp-primary);
       text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0;
     }
     .chain-badge {
       font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 4px;
-      background: linear-gradient(135deg, #818cf8, #60a5fa); color: #fff; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--qp-primary-container), var(--qp-primary)); color: var(--qp-primary-contrast); flex-shrink: 0;
     }
     .expr-badge {
       font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 4px;
-      background: rgba(96,165,250,0.15); color: #60a5fa;
+      background: var(--qp-primary-soft); color: var(--qp-primary);
       font-family: 'JetBrains Mono', monospace; flex-shrink: 0;
     }
     .linked-snippet-badge {
       font-size: 8px; font-weight: 600; padding: 1px 5px; border-radius: 4px;
-      background: rgba(255,255,255,0.08); color: #8b8d98; flex-shrink: 0;
+      background: color-mix(in srgb, var(--qp-surface-3) 75%, transparent); color: var(--qp-muted); flex-shrink: 0;
     }
     .snippet-emoji { font-size: 14px; line-height: 1; flex-shrink: 0; }
 
@@ -394,15 +690,15 @@
     .smart-actions-row { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
     .smart-action-btn {
       font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
-      border: 1px solid #60a5fa; background: rgba(96,165,250,0.12); color: #60a5fa;
+      border: 1px solid var(--qp-primary); background: var(--qp-primary-soft); color: var(--qp-primary);
       cursor: pointer; transition: background 0.12s, color 0.12s; white-space: nowrap;
     }
-    .smart-action-btn:hover { background: #60a5fa; color: #000; }
+    .smart-action-btn:hover { background: var(--qp-primary); color: var(--qp-primary-contrast); }
 
     /* ─── Color swatch preview ───────────────────────────────────────────────── */
     .color-preview-swatch {
       display: inline-block; width: 14px; height: 14px; border-radius: 3px;
-      border: 1px solid rgba(255,255,255,0.15); vertical-align: middle; margin-left: 4px;
+      border: 1px solid var(--qp-outline-variant); vertical-align: middle; margin-left: 4px;
     }
 
     /* ─── Color picker dots ──────────────────────────────────────────────────── */
@@ -413,7 +709,7 @@
       flex-shrink: 0;
     }
     .color-dot-btn:hover { transform: scale(1.15); }
-    .color-dot-btn.active { border-color: #e2e2e4; box-shadow: 0 0 0 3px rgba(255,255,255,0.15); }
+    .color-dot-btn.active { border-color: var(--qp-primary); box-shadow: 0 0 0 3px var(--qp-focus-ring); }
 
     /* ─── Theme picker dots ──────────────────────────────────────────────────── */
     .theme-dot-btn {
@@ -422,7 +718,7 @@
       transition: transform 0.15s, border-color 0.15s; flex-shrink: 0; background: transparent;
     }
     .theme-dot-btn:hover { transform: scale(1.15); }
-    .theme-dot-btn.active { border-color: #e2e2e4; box-shadow: 0 0 0 3px rgba(255,255,255,0.12); }
+    .theme-dot-btn.active { border-color: var(--qp-primary); box-shadow: 0 0 0 3px var(--qp-focus-ring); }
     .theme-dot-inner {
       width: 22px; height: 22px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center; font-size: 12px;
@@ -433,28 +729,28 @@
       font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 6px 8px;
       border-radius: 6px; word-break: break-all; line-height: 1.5;
     }
-    .dark #storagePathLabel { background: #0d0d12; color: #8b8d98; }
+    .dark #storagePathLabel { background: var(--qp-surface-2); color: var(--qp-muted); }
 
     /* ─── Char counter ───────────────────────────────────────────────────────── */
     .char-counter { font-size: 10px; text-align: right; }
-    .dark .char-counter { color: #8b8d98; }
-    .char-counter.warn { color: #f59e0b; }
-    .char-counter.limit { color: #f87171; }
+    .dark .char-counter { color: var(--qp-muted); }
+    .char-counter.warn { color: var(--qp-warning); }
+    .char-counter.limit { color: var(--qp-danger); }
 
     /* ─── Shortcut warning ───────────────────────────────────────────────────── */
-    .shortcut-warn { font-size: 10px; color: #f59e0b; margin-top: 3px; padding: 2px 4px; }
+    .shortcut-warn { font-size: 10px; color: var(--qp-warning); margin-top: 3px; padding: 2px 4px; }
     .shortcut-warn.hidden { display: none; }
 
     /* ─── Fuzzy highlight ────────────────────────────────────────────────────── */
-    .highlight { color: #60a5fa; font-weight: 700; background: rgba(96,165,250,0.12); border-radius: 2px; padding: 0 1px; }
+    .highlight { color: var(--qp-primary); font-weight: 700; background: var(--qp-primary-soft); border-radius: 2px; padding: 0 1px; }
 
     /* ─── Empty state ────────────────────────────────────────────────────────── */
     .empty-state { text-align: center; padding: 40px 20px; }
     .empty-icon { font-size: 40px; margin-bottom: 12px; }
     .empty-title { font-size: 14px; font-weight: 700; }
-    .dark .empty-title { color: #e2e2e4; }
+    .dark .empty-title { color: var(--qp-text); }
     .empty-desc { font-size: 12px; margin-top: 4px; }
-    .dark .empty-desc { color: #8b8d98; }
+    .dark .empty-desc { color: var(--qp-muted); }
 
     /* ─── Reveal btn ─────────────────────────────────────────────────────────── */
     .reveal-btn {
@@ -462,8 +758,8 @@
       cursor: pointer; display: inline-flex; align-items: center; gap: 3px;
       transition: background 0.12s; flex-shrink: 0;
     }
-    .dark .reveal-btn { border: 1px solid #2f313d; background: transparent; color: #8b8d98; }
-    .dark .reveal-btn:hover { background: rgba(255,255,255,0.05); color: #e2e2e4; }
+    .dark .reveal-btn { border: 1px solid var(--qp-border); background: transparent; color: var(--qp-muted); }
+    .dark .reveal-btn:hover { background: var(--qp-surface-3); color: var(--qp-text); }
   </style>
 </head>
 <body class="dark">
@@ -495,9 +791,9 @@
       <button id="dashboardBtn" title="Dashboard & Stats"
         class="w-7 h-7 rounded flex items-center justify-center dark:hover:bg-d-hover transition-colors">
         <div class="flex gap-0.5 h-3.5">
-          <div class="w-1 bg-pink-500 rounded-sm"></div>
-          <div class="w-1 bg-green-400 rounded-sm"></div>
-          <div class="w-1 bg-blue-400 rounded-sm"></div>
+          <div class="w-1 rounded-sm" style="background:var(--qp-primary)"></div>
+          <div class="w-1 rounded-sm" style="background:var(--qp-success)"></div>
+          <div class="w-1 rounded-sm" style="background:var(--qp-info)"></div>
         </div>
       </button>
       <!-- Open Launcher button (Main Window) - disabled/hidden -->
@@ -533,7 +829,7 @@
         <!-- Search + Category -->
         <div id="searchFrame" class="px-2.5 py-2 flex flex-col gap-1.5 border-b dark:border-d-border shrink-0">
           <div class="flex gap-2">
-            <div class="relative flex-1">
+            <div class="relative min-w-0" style="flex:0 1 50%; max-width:50%;">
               <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-d-dim pointer-events-none" style="font-size:16px;">search</span>
               <input type="text" id="searchInput" placeholder="Search snippets…" autocomplete="off"
                 class="w-full dark:bg-d-input dark:border-d-border dark:text-d-text dark:placeholder-d-dim border rounded-md pl-8 pr-2.5 py-1 text-xs focus:outline-none dark:focus:border-d-primary transition-colors font-sans"/>
@@ -752,12 +1048,12 @@
                     <span id="textExpansionDynamicTitle" class="font-semibold text-sm dark:text-d-text">Dynamic Variables</span>
                   </div>
                   <div class="flex flex-wrap gap-2 text-[10px] font-mono">
-                    <span class="px-2 py-1 rounded bg-black/15 dark:bg-black/30">{{date}}</span>
-                    <span class="px-2 py-1 rounded bg-black/15 dark:bg-black/30">{{time}}</span>
-                    <span class="px-2 py-1 rounded bg-black/15 dark:bg-black/30">{{datetime}}</span>
-                    <span class="px-2 py-1 rounded bg-black/15 dark:bg-black/30">{{clipboard}}</span>
-                    <span class="px-2 py-1 rounded bg-black/15 dark:bg-black/30">{{uuid}}</span>
-                    <span class="px-2 py-1 rounded bg-black/15 dark:bg-black/30">{{random:1-100}}</span>
+                    <span class="px-2 py-1 rounded bg-d-input dark:bg-d-input">{{date}}</span>
+                    <span class="px-2 py-1 rounded bg-d-input dark:bg-d-input">{{time}}</span>
+                    <span class="px-2 py-1 rounded bg-d-input dark:bg-d-input">{{datetime}}</span>
+                    <span class="px-2 py-1 rounded bg-d-input dark:bg-d-input">{{clipboard}}</span>
+                    <span class="px-2 py-1 rounded bg-d-input dark:bg-d-input">{{uuid}}</span>
+                    <span class="px-2 py-1 rounded bg-d-input dark:bg-d-input">{{random:1-100}}</span>
                   </div>
                   <p id="textExpansionDynamicDescription" class="text-xs dark:text-d-dim mt-2">
                     Variables resolve when the expansion fires, not when it is saved.
@@ -848,7 +1144,7 @@
                   <span class="dark:text-d-text">Text Snippets</span>
                 </div>
                 <div class="h-1.5 dark:bg-d-input rounded-full overflow-hidden">
-                  <div id="barTypeText" class="breakdown-bar-fill bg-blue-400" style="width:0%"></div>
+                  <div id="barTypeText" class="breakdown-bar-fill" style="width:0%; background:var(--qp-primary)"></div>
                 </div>
               </div>
               <div>
@@ -856,7 +1152,7 @@
                   <span class="dark:text-d-text">Code Snippets</span>
                 </div>
                 <div class="h-1.5 dark:bg-d-input rounded-full overflow-hidden">
-                  <div id="barTypeCode" class="breakdown-bar-fill bg-green-400" style="width:0%"></div>
+                  <div id="barTypeCode" class="breakdown-bar-fill" style="width:0%; background:var(--qp-success)"></div>
                 </div>
               </div>
               <div>
@@ -864,7 +1160,7 @@
                   <span class="dark:text-d-text">URLs</span>
                 </div>
                 <div class="h-1.5 dark:bg-d-input rounded-full overflow-hidden">
-                  <div id="barTypeUrl" class="breakdown-bar-fill bg-purple-400" style="width:0%"></div>
+                  <div id="barTypeUrl" class="breakdown-bar-fill" style="width:0%; background:var(--qp-primary-container)"></div>
                 </div>
               </div>
               <div>
@@ -872,7 +1168,7 @@
                   <span class="dark:text-d-text">Passwords</span>
                 </div>
                 <div class="h-1.5 dark:bg-d-input rounded-full overflow-hidden">
-                  <div id="barTypePassword" class="breakdown-bar-fill bg-orange-400" style="width:0%"></div>
+                  <div id="barTypePassword" class="breakdown-bar-fill" style="width:0%; background:var(--qp-warning)"></div>
                 </div>
               </div>
             </div>
@@ -896,7 +1192,7 @@
               <div class="flex gap-2 mb-3" id="hotkeyKeysRow">
                 <!-- Kbd chips rendered by JS -->
               </div>
-              <div class="flex gap-2 mb-2">
+              <div id="hotkeyInputRow" class="flex gap-2 mb-2">
                 <input type="text" id="hotkeyInput" readonly placeholder="Click & press keys to set…"
                   class="flex-1 dark:bg-d-input dark:border-d-border dark:text-d-dim border rounded-lg px-3 py-1.5 text-xs font-mono focus:outline-none dark:focus:border-d-primary cursor-pointer"/>
                 <button id="hotkeyClearBtn" title="Reset to default"

@@ -1,16 +1,16 @@
 # Graph Report - insta-paste-tauri  (2026-07-05)
 
 ## Corpus Check
-- 19 files · ~77,910 words
+- 19 files · ~79,056 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 437 nodes · 797 edges · 36 communities (19 shown, 17 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 17 edges (avg confidence: 0.71)
+- 482 nodes · 879 edges · 46 communities (20 shown, 26 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4154b2c7`
+- Built from commit: `ca5fd36a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -48,47 +48,57 @@
 - [[_COMMUNITY_AppHandle|AppHandle]]
 - [[_COMMUNITY_Mutex|Mutex]]
 - [[_COMMUNITY_applyPanelHeaderState|applyPanelHeaderState]]
+- [[_COMMUNITY_Drop|Drop]]
+- [[_COMMUNITY_INPUT|INPUT]]
+- [[_COMMUNITY_Option|Option]]
+- [[_COMMUNITY_PathBuf|PathBuf]]
+- [[_COMMUNITY_Self|Self]]
+- [[_COMMUNITY_Settings|Settings]]
+- [[_COMMUNITY_Snippet|Snippet]]
+- [[_COMMUNITY_Snippet|Snippet]]
+- [[_COMMUNITY_String|String]]
+- [[_COMMUNITY_Vec|Vec]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `TextExpansion` - 34 edges
-2. `⚙️ Uygulamadaki Tüm Sistemler ve Çalışma Prensipleri` - 14 edges
-3. `AppState` - 13 edges
-4. `reregister_all_shortcuts()` - 12 edges
-5. `bootstrap_runtime()` - 10 edges
-6. `evaluate_match()` - 10 edges
-7. `keyboard_hook_proc()` - 9 edges
-8. `paste_via_clipboard()` - 9 edges
-9. `import_data()` - 9 edges
-10. `set_runtime()` - 9 edges
+2. `AppState` - 14 edges
+3. `⚙️ Uygulamadaki Tüm Sistemler ve Çalışma Prensipleri` - 14 edges
+4. `Snippet` - 13 edges
+5. `reregister_all_shortcuts()` - 12 edges
+6. `load_snippets()` - 11 edges
+7. `load_settings()` - 11 edges
+8. `bootstrap_runtime()` - 10 edges
+9. `evaluate_match()` - 10 edges
+10. `Settings` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `loadAndDisplay()` --calls--> `fuzzyFilter()`  [INFERRED]
-  src/main.js → src/features.js
-- `processStaticPlaceholders()` --calls--> `processInlineExpressions()`  [INFERRED]
-  src/main.js → src/features.js
-- `processStaticPlaceholders()` --calls--> `resolveLinkedSnippets()`  [INFERRED]
-  src/main.js → src/features.js
-- `processStaticPlaceholders()` --calls--> `processConditionalTemplates()`  [INFERRED]
-  src/main.js → src/features.js
-- `loadAndDisplay()` --calls--> `sortByContext()`  [INFERRED]
-  src/main.js → src/features.js
+- `AppState` --references--> `ClipboardMonitor`  [EXTRACTED]
+  src-tauri/src/lib.rs → src-tauri/src/clipboard_monitor.rs
+- `ImportedData` --references--> `Snippet`  [EXTRACTED]
+  src-tauri/src/lib.rs → src-tauri/src/data_store.rs
+- `load_snippets()` --references--> `Snippet`  [EXTRACTED]
+  src-tauri/src/lib.rs → src-tauri/src/data_store.rs
+- `save_snippets()` --references--> `Snippet`  [EXTRACTED]
+  src-tauri/src/lib.rs → src-tauri/src/data_store.rs
+- `bootstrap_runtime()` --references--> `Snippet`  [EXTRACTED]
+  src-tauri/src/text_expansion.rs → src-tauri/src/data_store.rs
 
 ## Import Cycles
 - None detected.
 
-## Communities (36 total, 17 thin omitted)
+## Communities (46 total, 26 thin omitted)
 
 ### Community 0 - "main.js"
 Cohesion: 0.02
-Nodes (70): addBtn, appSettings, appWindow, autoPasteToggle, bulkActionBar, bulkCancelBtn, bulkDeleteBtn, bulkStackBtn (+62 more)
+Nodes (71): addBtn, appSettings, appWindow, autoPasteToggle, bulkActionBar, bulkCancelBtn, bulkDeleteBtn, bulkStackBtn (+63 more)
 
 ### Community 1 - "features.js"
 Cohesion: 0.07
-Nodes (34): applyTheme(), buildCustomTheme(), checkAutoPromote(), CONTENT_DETECTORS, CONTEXT_MAP, delay(), detectContentType(), escapeHtmlSimple() (+26 more)
+Nodes (26): applyTheme(), buildCustomTheme(), checkAutoPromote(), CONTENT_DETECTORS, CONTEXT_MAP, delay(), detectContentType(), escapeHtmlSimple() (+18 more)
 
 ### Community 2 - "lib.rs"
-Cohesion: 0.13
-Nodes (44): AppHandle, ClipboardMonitor, Mutex, Settings, AppState, capture_foreground_window(), capture_target(), clear_all_data() (+36 more)
+Cohesion: 0.14
+Nodes (42): AppState, capture_foreground_window(), capture_target(), clear_all_data(), copy_and_paste(), copy_only(), export_data(), export_text_expansions() (+34 more)
 
 ### Community 3 - "⚙️ Uygulamadaki Tüm Sistemler ve Çalışma Prensipleri"
 Cohesion: 0.11
@@ -100,23 +110,23 @@ Nodes (17): app, security, windows, withGlobalTauri, build, frontendDist, bundle
 
 ### Community 5 - "data_store.rs"
 Cohesion: 0.17
-Nodes (23): Default, FnOnce, Option, PathBuf, Self, default_snippet_type(), default_theme(), get_app_dir() (+15 more)
+Nodes (32): archive_corrupt_file(), backup_path(), corrupt_archive_path(), default_snippet_type(), default_theme(), get_app_dir(), get_settings_path(), get_snippets_path() (+24 more)
 
 ### Community 6 - "process_new_clipboard_text"
-Cohesion: 0.26
-Nodes (8): Arc, AtomicBool, clipboard_wnd_proc(), ClipboardMonitor, ClipboardPayload, is_password_manager(), process_new_clipboard_text(), HWND
+Cohesion: 0.16
+Nodes (16): Arc, AtomicBool, Duration, HWND, clipboard_updates_suppressed(), clipboard_wnd_proc(), ClipboardMonitor, ClipboardPayload (+8 more)
 
 ### Community 7 - "keyboard_hook.rs"
-Cohesion: 0.17
-Nodes (23): Drop, INPUT, classify_terminator(), is_injected(), is_key_down(), is_navigation_key(), is_pure_modifier(), keyboard_hook_proc() (+15 more)
+Cohesion: 0.16
+Nodes (23): Mutex, classify_terminator(), is_injected(), is_key_down(), is_navigation_key(), is_pure_modifier(), keyboard_hook_proc(), make_keyboard_input() (+15 more)
 
 ### Community 8 - "QuickPaste — Geliştirici ve Kurulum Kılavuzu (HowToDo.md)"
 Cohesion: 0.18
 Nodes (10): 1. Task Manager İsmi ve Telif Bilgisi, 2. Türkçe Karakterli Hotkey Desteği, 3. Pano Kilit Çatışması (Clipboard Lock Isolation), 📦 Dağıtım İçin Paketleme (Production Build), 🚀 Geliştirme Ortamında Çalıştırma (Dev Mode), 📂 Kritik Dosyaların Rolleri, 💡 Kritik Özellikler & Sorun Giderme, QuickPaste — Geliştirici ve Kurulum Kılavuzu (HowToDo.md) (+2 more)
 
 ### Community 9 - "clipboard_manager.rs"
-Cohesion: 0.27
-Nodes (7): get_active_process_name(), make_keyboard_input(), release_all_modifiers(), restore_focus_and_paste(), INPUT, String, send_ctrl_v()
+Cohesion: 0.14
+Nodes (19): capture_clipboard_snapshot(), ClipboardDataKind, ClipboardFormatData, ClipboardOpenGuard, ClipboardSnapshot, get_active_process_name(), make_keyboard_input(), open_clipboard_with_retry() (+11 more)
 
 ### Community 10 - "package.json"
 Cohesion: 0.18
@@ -131,8 +141,8 @@ Cohesion: 0.83
 Nodes (4): handleOutsideContextClick(), hideTransformSubmenu(), removeContextMenu(), showContextMenu()
 
 ### Community 14 - "applyTheme"
-Cohesion: 0.11
-Nodes (59): RwLock, app_filter_matches(), append_text(), backspace_buffer(), bootstrap_runtime(), boundary_allows(), buffer_limit(), build_runtime_state() (+51 more)
+Cohesion: 0.10
+Nodes (64): FnOnce, RwLock, app_filter_matches(), append_text(), backspace_buffer(), bootstrap_runtime(), boundary_allows(), buffer_limit() (+56 more)
 
 ### Community 28 - "text-expansion-panel.js"
 Cohesion: 0.20
@@ -140,27 +150,31 @@ Nodes (14): APP_FILTER_LABELS, APP_FILTER_PRESETS, appFilterLabel(), appFilterSu
 
 ### Community 29 - "selectAndPaste"
 Cohesion: 0.18
-Nodes (12): fuzzyFilter(), sortByContext(), getCustomPlaceholders(), loadAndDisplay(), performPaste(), promptPlaceholders(), refreshCategoryFilter(), reloadData() (+4 more)
+Nodes (12): getCustomPlaceholders(), loadAndDisplay(), performPaste(), processClipboardEntry(), processStaticPlaceholders(), promptPlaceholders(), refreshCategoryFilter(), reloadData() (+4 more)
+
+### Community 35 - "applyPanelHeaderState"
+Cohesion: 0.50
+Nodes (4): applyPanelHeaderState(), resizeForSidePanel(), returnToMainPage(), setHeaderButtonActive()
 
 ## Knowledge Gaps
-- **129 isolated node(s):** `CONTENT_DETECTORS`, `TRANSFORMS`, `CONTEXT_MAP`, `THEMES`, `paletteItems` (+124 more)
+- **129 isolated node(s):** `appWindow`, `snippets`, `filteredSnippets`, `appSettings`, `selectedSnippets` (+124 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **26 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `TextExpansion` connect `applyTheme` to `lib.rs`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
-- **Why does `processClipboardEntry()` connect `features.js` to `main.js`, `selectAndPaste`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
-- **Why does `processStaticPlaceholders()` connect `features.js` to `main.js`, `selectAndPaste`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
-- **What connects `CONTENT_DETECTORS`, `TRANSFORMS`, `CONTEXT_MAP` to the rest of the system?**
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **Why does `Snippet` connect `data_store.rs` to `lib.rs`, `applyTheme`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `AppState` connect `lib.rs` to `process_new_clipboard_text`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **What connects `appWindow`, `snippets`, `filteredSnippets` to the rest of the system?**
   _129 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `main.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.022727272727272728 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.022222222222222223 - nodes in this community are weakly interconnected._
 - **Should `features.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.0743321718931475 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07435897435897436 - nodes in this community are weakly interconnected._
 - **Should `lib.rs` be split into smaller, more focused modules?**
-  _Cohesion score 0.13140096618357489 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1416490486257928 - nodes in this community are weakly interconnected._

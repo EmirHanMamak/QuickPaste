@@ -12,8 +12,9 @@
       {
         "label": "main",
         "title": "QuickPaste",
-        "width": 410,
+        "width": 500,
         "height": 800,
+        "center": true,
         "minWidth": 370,
         "minHeight": 480,
         "resizable": true,
