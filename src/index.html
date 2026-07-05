@@ -776,6 +776,210 @@
     }
     .dark .reveal-btn { border: 1px solid var(--qp-border); background: transparent; color: var(--qp-muted); }
     .dark .reveal-btn:hover { background: var(--qp-surface-3); color: var(--qp-text); }
+
+    /* ─── Premium shell polish ─────────────────────────────────────────────── */
+    body:not(.launcher-mode) {
+      position: relative;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 12% 10%, color-mix(in srgb, var(--qp-primary) 18%, transparent) 0%, transparent 30%),
+        radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--qp-info) 12%, transparent) 0%, transparent 24%),
+        radial-gradient(circle at 50% 110%, color-mix(in srgb, var(--qp-primary-container) 10%, transparent) 0%, transparent 34%),
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-bg) 84%, black) 0%, var(--qp-bg) 42%, color-mix(in srgb, var(--qp-bg) 96%, black) 100%);
+      background-attachment: fixed;
+    }
+    body:not(.launcher-mode)::before,
+    body:not(.launcher-mode)::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body:not(.launcher-mode)::before {
+      background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05), transparent 42%);
+      opacity: 0.7;
+    }
+    body:not(.launcher-mode)::after {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 22%),
+        linear-gradient(0deg, rgba(0, 0, 0, 0.18), transparent 18%);
+      opacity: 0.5;
+    }
+    body:not(.launcher-mode) #mainContainer {
+      position: relative;
+      isolation: isolate;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--qp-primary) 14%, transparent) 0%, transparent 18%),
+        radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--qp-info) 10%, transparent) 0%, transparent 16%),
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-surface) 96%, white 4%) 0%, color-mix(in srgb, var(--qp-bg) 92%, black) 100%);
+      border: 1px solid color-mix(in srgb, var(--qp-border) 88%, transparent);
+      box-shadow:
+        0 28px 90px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+    body:not(.launcher-mode) #mainContainer::before,
+    body:not(.launcher-mode) #mainContainer::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(18px);
+      opacity: 0.8;
+    }
+    body:not(.launcher-mode) #mainContainer::before {
+      right: -90px;
+      top: -90px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--qp-primary) 28%, transparent), transparent 70%);
+    }
+    body:not(.launcher-mode) #mainContainer::after {
+      left: -70px;
+      bottom: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--qp-info) 18%, transparent), transparent 72%);
+    }
+    body:not(.launcher-mode) #bodyArea,
+    body:not(.launcher-mode) #listPanel,
+    body:not(.launcher-mode) #settingsScroll,
+    body:not(.launcher-mode) #textExpansionScroll,
+    body:not(.launcher-mode) #dashboardScroll {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-bg) 95%, black) 0%, var(--qp-bg) 100%);
+    }
+    body:not(.launcher-mode) #textExpansionMainGrid > section,
+    body:not(.launcher-mode) #dashboardStatsGrid > div,
+    body:not(.launcher-mode) #textExpansionScroll .dark\:bg-d-card,
+    body:not(.launcher-mode) #textExpansionScroll .dark\:bg-d-input,
+    body:not(.launcher-mode) #dashboardScroll .dark\:bg-d-card,
+    body:not(.launcher-mode) #settingsScroll .dark\:bg-d-card,
+    body:not(.launcher-mode) #settingsScroll .dark\:bg-d-input,
+    body:not(.launcher-mode) #dialogOverlay .dark\:bg-d-card,
+    body:not(.launcher-mode) #dialogOverlay .dark\:bg-d-input,
+    body:not(.launcher-mode) #textExpansionOnboardingOverlay .dark\:bg-d-card,
+    body:not(.launcher-mode) #textExpansionOnboardingOverlay .dark\:bg-d-input {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-surface) 96%, white 4%), color-mix(in srgb, var(--qp-surface) 90%, black)) !important;
+      border-color: color-mix(in srgb, var(--qp-border) 90%, transparent) !important;
+      box-shadow:
+        0 16px 32px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+    body:not(.launcher-mode) #headerFrame,
+    body:not(.launcher-mode) #footerFrame {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-surface) 94%, white 6%), color-mix(in srgb, var(--qp-surface) 86%, black));
+      border-color: color-mix(in srgb, var(--qp-border) 92%, transparent) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(18px) saturate(1.15);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    }
+    body:not(.launcher-mode) #headerFrame button {
+      border: 1px solid color-mix(in srgb, var(--qp-border) 72%, transparent);
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-surface-2) 90%, transparent), color-mix(in srgb, var(--qp-surface) 88%, transparent));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 1px 0 rgba(0, 0, 0, 0.08);
+      border-radius: 11px;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+    }
+    body:not(.launcher-mode) #headerFrame button:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--qp-primary) 36%, var(--qp-border));
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-surface-3) 88%, transparent), color-mix(in srgb, var(--qp-surface-2) 86%, transparent));
+    }
+    body:not(.launcher-mode) #headerFrame button:focus-visible,
+    body:not(.launcher-mode) #footerFrame button:focus-visible,
+    body:not(.launcher-mode) #bulkActionBar button:focus-visible,
+    body:not(.launcher-mode) #searchFrame button:focus-visible,
+    body:not(.launcher-mode) #searchFrame input:focus-visible,
+    body:not(.launcher-mode) #searchFrame select:focus-visible,
+    body:not(.launcher-mode) #textExpansionScroll button:focus-visible,
+    body:not(.launcher-mode) #textExpansionScroll input:focus-visible,
+    body:not(.launcher-mode) #textExpansionScroll select:focus-visible,
+    body:not(.launcher-mode) #textExpansionScroll textarea:focus-visible,
+    body:not(.launcher-mode) #settingsScroll button:focus-visible,
+    body:not(.launcher-mode) #settingsScroll input:focus-visible,
+    body:not(.launcher-mode) #settingsScroll select:focus-visible,
+    body:not(.launcher-mode) #settingsScroll textarea:focus-visible,
+    body:not(.launcher-mode) #dialogOverlay button:focus-visible,
+    body:not(.launcher-mode) #dialogOverlay input:focus-visible,
+    body:not(.launcher-mode) #dialogOverlay select:focus-visible,
+    body:not(.launcher-mode) #dialogOverlay textarea:focus-visible,
+    body:not(.launcher-mode) #paletteContainer button:focus-visible,
+    body:not(.launcher-mode) #paletteInput:focus-visible,
+    body:not(.launcher-mode) #quickLookOverlay button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--qp-focus-ring);
+    }
+    body:not(.launcher-mode) #searchFrame,
+    body:not(.launcher-mode) #bulkActionBar,
+    body:not(.launcher-mode) #paletteContainer,
+    body:not(.launcher-mode) #quickLookOverlay > div,
+    body:not(.launcher-mode) #dialogOverlay > div,
+    body:not(.launcher-mode) #placeholderOverlay > div {
+      border-radius: 18px;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+    body:not(.launcher-mode) #searchFrame {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-surface) 94%, white 6%), color-mix(in srgb, var(--qp-surface) 88%, black));
+    }
+    body:not(.launcher-mode) #bulkActionBar {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-primary-soft) 84%, var(--qp-surface)), color-mix(in srgb, var(--qp-surface) 86%, black));
+    }
+    body:not(.launcher-mode) #dialogOverlay,
+    body:not(.launcher-mode) #placeholderOverlay {
+      background: color-mix(in srgb, var(--qp-overlay) 92%, black);
+      backdrop-filter: blur(10px) saturate(1.05);
+      -webkit-backdrop-filter: blur(10px) saturate(1.05);
+    }
+    body:not(.launcher-mode) #commandPaletteOverlay,
+    body:not(.launcher-mode) #quickLookOverlay {
+      background: color-mix(in srgb, var(--qp-overlay) 96%, black);
+      backdrop-filter: blur(10px) saturate(1.06);
+      -webkit-backdrop-filter: blur(10px) saturate(1.06);
+    }
+    body:not(.launcher-mode) #paletteContainer {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-surface) 94%, white 6%), color-mix(in srgb, var(--qp-surface) 86%, black));
+      border: 1px solid color-mix(in srgb, var(--qp-border) 94%, transparent);
+    }
+    body:not(.launcher-mode) #quickLookOverlay > div,
+    body:not(.launcher-mode) #dialogOverlay > div,
+    body:not(.launcher-mode) #placeholderOverlay > div {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--qp-surface) 96%, white 4%), color-mix(in srgb, var(--qp-bg) 92%, black));
+      border: 1px solid color-mix(in srgb, var(--qp-border) 92%, transparent);
+    }
+    body:not(.launcher-mode) #addBtn {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--qp-primary) 90%, white 10%), var(--qp-primary-container));
+      box-shadow:
+        0 14px 28px color-mix(in srgb, var(--qp-primary) 24%, transparent),
+        0 6px 18px rgba(0, 0, 0, 0.24);
+    }
+    body:not(.launcher-mode) #addBtn:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow:
+        0 18px 32px color-mix(in srgb, var(--qp-primary) 28%, transparent),
+        0 8px 20px rgba(0, 0, 0, 0.28);
+    }
+    body:not(.launcher-mode) #toastContainer .toast {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(10px) saturate(1.08);
+      -webkit-backdrop-filter: blur(10px) saturate(1.08);
+    }
   </style>
 </head>
 <body class="dark">

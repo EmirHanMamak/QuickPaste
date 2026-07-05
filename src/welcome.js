@@ -156,7 +156,19 @@ function normalizeTrigger(trigger) {
 
 async function main() {
   if (typeof invoke !== 'function') {
-    document.body.innerHTML = '<div style="padding:24px;color:#e7e7ea;background:#101114;font-family:Inter,sans-serif;">QuickPaste welcome window could not initialize.</div>';
+    document.body.innerHTML = `
+      <div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px;background:
+        radial-gradient(circle at 14% 8%, rgba(74,163,255,0.14), transparent 28%),
+        radial-gradient(circle at 86% 10%, rgba(124,58,237,0.12), transparent 24%),
+        linear-gradient(180deg, #0c1017 0%, #101420 42%, #0b0f16 100%);
+        color:#e7e7ea;font-family:Inter,sans-serif;">
+        <div style="max-width:760px;border:1px solid #2f3446;border-radius:24px;padding:28px;background:linear-gradient(180deg, rgba(24,27,39,0.98), rgba(14,16,23,0.98));box-shadow:0 30px 84px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.03);">
+          <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#9aa0b4;margin-bottom:12px;">QuickPaste Welcome</div>
+          <h1 style="margin:0 0 12px;font-size:28px;line-height:1.2;">QuickPaste welcome window could not initialize.</h1>
+          <p style="margin:0;color:#9aa0b4;white-space:pre-wrap;">The app could not load the onboarding screen. Please reopen it from Settings.</p>
+        </div>
+      </div>
+    `;
     return;
   }
 
@@ -422,9 +434,13 @@ async function main() {
 main().catch(async (error) => {
   console.error(error);
   document.body.innerHTML = `
-    <div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px;background:#101114;color:#e7e7ea;font-family:Inter,sans-serif;">
-      <div style="max-width:720px;border:1px solid #2f3446;border-radius:20px;padding:24px;background:#171925;">
-        <div style="font-size:12px;letter-spacing:0.25em;text-transform:uppercase;color:#9aa0b4;margin-bottom:12px;">QuickPaste Welcome</div>
+    <div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px;background:
+      radial-gradient(circle at 14% 8%, rgba(74,163,255,0.14), transparent 28%),
+      radial-gradient(circle at 86% 10%, rgba(124,58,237,0.12), transparent 24%),
+      linear-gradient(180deg, #0c1017 0%, #101420 42%, #0b0f16 100%);
+      color:#e7e7ea;font-family:Inter,sans-serif;">
+      <div style="max-width:760px;border:1px solid #2f3446;border-radius:24px;padding:28px;background:linear-gradient(180deg, rgba(24,27,39,0.98), rgba(14,16,23,0.98));box-shadow:0 30px 84px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.03);">
+        <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#9aa0b4;margin-bottom:12px;">QuickPaste Welcome</div>
         <h1 style="margin:0 0 12px;font-size:28px;line-height:1.2;">Welcome screen failed to load</h1>
         <p style="margin:0;color:#9aa0b4;white-space:pre-wrap;">${String(error).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
       </div>

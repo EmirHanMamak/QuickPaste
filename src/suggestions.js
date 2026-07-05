@@ -127,7 +127,7 @@ async function main() {
 main().catch((error) => {
   console.error(error);
   elements.list.innerHTML = `
-    <div class="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-4 text-sm text-red-100">
+    <div class="rounded-xl border border-red-500/25 bg-gradient-to-b from-red-500/12 to-red-500/6 px-3 py-4 text-sm text-red-50 shadow-[0_16px_32px_rgba(0,0,0,0.24)]">
       Failed to load suggestions.
     </div>
   `;
